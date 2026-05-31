@@ -1205,7 +1205,7 @@ function sendMsg() {
   }
   var reqBody = {prompt: text||'Analyze this image and help me.', systemPrompt: BROOKE_SYSTEM, history: history, stream: true};
   if (ib) { reqBody.imageData = ib; reqBody.imageMime = im; }
-  fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(reqBody)})
+  fetch('https://brooke-proxy.haeodo.workers.dev',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(reqBody)})
   .then(function(res) {
     typ.remove();
     if (!res.ok) { addEl('brooke','Connection issue - please try again.'); document.getElementById('cst').textContent='Online - Hi-Desert'; return; }
@@ -1282,7 +1282,7 @@ function stopV(e) {
   if (tRecog) tRecog.stop();
   document.getElementById('tTx').textContent = 'Thinking...';
   var respEl = document.getElementById('tResp'); respEl.classList.remove('show'); respEl.innerHTML = '';
-  fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:tx,systemPrompt:BROOKE_SYSTEM,stream:true})})
+  fetch('https://brooke-proxy.haeodo.workers.dev',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:tx,systemPrompt:BROOKE_SYSTEM,stream:true})})
   .then(function(res) {
     var full='',buf=''; respEl.classList.add('show');
     document.getElementById('tTx').textContent = '"' + tx + '"';
@@ -1324,7 +1324,7 @@ function genEmail(){
   document.getElementById('emailSubjLine').innerHTML='';
   document.getElementById('emailOutBody').innerHTML='';
 
-  fetch('/api/generate',{
+  fetch('https://brooke-proxy.haeodo.workers.dev',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({
@@ -1388,7 +1388,7 @@ function genListing(){
   document.getElementById('zillowText').innerHTML='';
   document.getElementById('igText').innerHTML='';
 
-  fetch('/api/generate',{
+  fetch('https://brooke-proxy.haeodo.workers.dev',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({
@@ -1446,7 +1446,7 @@ function doScan(){
   var resEl=document.getElementById('sres'),resT=document.getElementById('sresT');
   resEl.classList.remove('show');resT.innerHTML='';
   var reqBody={prompt:p,systemPrompt:BROOKE_SYSTEM,imageData:sImgB64,imageMime:sImgMime,stream:true};
-  fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(reqBody)})
+  fetch('https://brooke-proxy.haeodo.workers.dev',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(reqBody)})
   .then(function(res){
     var full='',buf='';resEl.classList.add('show');
     var reader=res.body.getReader(),dec=new TextDecoder();
@@ -1492,7 +1492,7 @@ function getScript(situation){
   body.innerHTML='<span style="color:var(--muted);font-size:12px">Writing your script...</span>';
   result.classList.add('show');
   document.querySelector('.scripts-body').scrollTop=99999;
-  fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:prompt,systemPrompt:'You are an expert California real estate coach. Give practical, word-for-word scripts. Be direct and confident.'})})
+  fetch('https://brooke-proxy.haeodo.workers.dev',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:prompt,systemPrompt:'You are an expert California real estate coach. Give practical, word-for-word scripts. Be direct and confident.'})})
   .then(function(r){return r.json();}).then(function(d){if(d.text){body.innerHTML=fmt(d.text);}else{body.innerHTML='Try again.';} document.querySelector('.scripts-body').scrollTop=99999;})
   .catch(function(){body.innerHTML='Connection error - try again.';});
 }
@@ -1520,7 +1520,7 @@ function explainForm(formName, fullName, question){
   body.innerHTML='<span style="color:var(--muted);font-size:12px">Brooke is reading the form...</span>';
   result.classList.add('show');
   document.querySelector('.forms-body').scrollTop=99999;
-  fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:question,systemPrompt:'You are a California real estate forms expert helping an independent broker in the Hi-Desert. Explain forms in plain English. Use numbered steps and bold key terms. Reference 2026 C.A.R. standards.'})})
+  fetch('https://brooke-proxy.haeodo.workers.dev',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:question,systemPrompt:'You are a California real estate forms expert helping an independent broker in the Hi-Desert. Explain forms in plain English. Use numbered steps and bold key terms. Reference 2026 C.A.R. standards.'})})
   .then(function(r){return r.json();}).then(function(d){if(d.text){body.innerHTML=fmt(d.text);}else{body.innerHTML='Try again.';} document.querySelector('.forms-body').scrollTop=99999;})
   .catch(function(){body.innerHTML='Connection error - try again.';});
 }
@@ -1550,7 +1550,7 @@ function genBrand(){
   document.getElementById('brandSig').classList.remove('show');
   document.getElementById('brandPitch').classList.remove('show');
   var prompt='Create professional real estate branding for this agent: Name: '+name+'. Years in real estate: '+(years||'experienced')+'. Market: '+market+'. Specialty: '+(spec||'residential real estate')+'. Personality: '+(words||'professional, local, knowledgeable')+'. Background: '+(extra||'independent California real estate agent')+'. Generate FOUR sections with these exact headers on their own line: [BIO] [INSTAGRAM] [SIGNATURE] [PITCH]. BIO: 150-word professional bio in third person. INSTAGRAM: Instagram profile bio max 150 chars with emojis and line breaks. SIGNATURE: Professional email signature with name, title Independent Broker, market area, and placeholder for phone/email/website. PITCH: 30-second spoken elevator pitch in first person, conversational and memorable.';
-  fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:prompt,systemPrompt:'You are a real estate personal branding expert. Create compelling, authentic brand copy for independent California agents.',max_tokens:1200})})
+  fetch('https://brooke-proxy.haeodo.workers.dev',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:prompt,systemPrompt:'You are a real estate personal branding expert. Create compelling, authentic brand copy for independent California agents.',max_tokens:1200})})
   .then(function(r){return r.json();}).then(function(d){
     if(d.text){parseBrand(d.text);}else{toast('Try again');}
     btn.disabled=false;btn.textContent='Build My Brand';
