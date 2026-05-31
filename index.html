@@ -1214,6 +1214,9 @@ function sendMsg() {
     function pump() {
       return reader.read().then(function(chunk) {
         if (chunk.done) {
+          if (buf.trim()) {
+            try { var j=JSON.parse(buf.trim()); if(j.text){full+=j.text;bub.innerHTML=fmt(full);scrl();} } catch(er) {}
+          }
           if (!full) bub.innerHTML = 'Connection issue - please try again.';
           msgs.push({role:'assistant',content:full}); saveCurrent();
           document.getElementById('cst').textContent = 'Online - Hi-Desert'; return;
