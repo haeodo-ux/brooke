@@ -1,0 +1,11 @@
+{
+  "name": "Brooke - Your Broker In Your Pocket",
+  "short_name": "Brooke",
+  "description": "AI real estate partner for California Hi-Desert brokers",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#080808",
+  "theme_color": "#39FF6A",
+  "orientation": "portrait",
+  "categories": ["business", "productivity"]
+}

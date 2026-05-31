@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Brooke">
+<meta name="theme-color" content="#080808">
+<link rel="manifest" href="manifest.json">
+<title>Brooke</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --neon:#39FF6A;--neon-dim:rgba(57,255,106,0.1);--neon-b:rgba(57,255,106,0.28);
+  --purple:#9B59FF;--purple-dim:rgba(155,89,255,0.1);--purple-b:rgba(155,89,255,0.28);
+  --gold:#F5C842;--gold-dim:rgba(245,200,66,0.1);--gold-b:rgba(245,200,66,0.28);
+  --coral:#FF6B6B;--coral-dim:rgba(255,107,107,0.1);--coral-b:rgba(255,107,107,0.28);
+  --dark:#080808;--s2:#131313;--s3:#1C1C1C;--s4:#242424;
+  --border:rgba(255,255,255,0.06);--text:#F0F0EE;--muted:rgba(240,240,238,0.36);--danger:#FF5A5A;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;width:100%;overflow:hidden;background:var(--dark);font-family:'Syne',sans-serif;color:var(--text)}
+.screen{display:none;flex-direction:column;height:100vh;width:100%;position:absolute;top:0;left:0}
+.screen.active{display:flex}
+
+/* SPLASH */
+#splash{align-items:center;justify-content:center;background:var(--dark);gap:20px}
+.splash-icon{width:96px;height:96px;border-radius:28px;background:var(--s2);border:1.5px solid var(--neon-b);display:flex;align-items:center;justify-content:center;animation:splash-pulse 2s ease-in-out infinite}
+@keyframes splash-pulse{0%,100%{box-shadow:0 0 0 0 rgba(57,255,106,0.2)}50%{box-shadow:0 0 0 18px rgba(57,255,106,0)}}
+.splash-icon svg{width:56px;height:56px}
+.splash-name{font-size:52px;font-weight:800;letter-spacing:-0.03em;text-align:center;line-height:1}
+.splash-name span{color:var(--neon)}
+.splash-tag{font-size:11px;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase;font-family:'DM Mono',monospace}
+.splash-dots{display:flex;gap:8px;margin-top:24px}
+.sdot{width:7px;height:7px;border-radius:50%;background:var(--neon);animation:db 1.2s ease-in-out infinite}
+.sdot:nth-child(2){animation-delay:.2s;background:var(--purple)}
+.sdot:nth-child(3){animation-delay:.4s;background:var(--gold)}
+@keyframes db{0%,100%{transform:translateY(0);opacity:.35}50%{transform:translateY(-8px);opacity:1}}
+
+/* HEADER */
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:54px 18px 12px;background:var(--dark);border-bottom:.5px solid var(--border);flex-shrink:0}
+.hdr-l{display:flex;align-items:center;gap:10px}
+.hdr-icon{width:38px;height:38px;border-radius:11px;background:var(--s2);border:1px solid var(--neon-b);display:flex;align-items:center;justify-content:center}
+.hdr-icon svg{width:22px;height:22px}
+.hdr-n{font-size:19px;font-weight:800;letter-spacing:-0.02em}
+.hdr-n span{color:var(--neon)}
+.hdr-st{font-size:9px;color:var(--neon);letter-spacing:.07em;text-transform:uppercase;font-family:'DM Mono',monospace;margin-top:1px}
+.hbtn{width:34px;height:34px;border-radius:10px;background:var(--s2);border:.5px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;color:var(--muted)}
+.hbtns{display:flex;gap:7px}
+
+/* BOTTOM NAV - 5 tabs */
+.bnav{display:flex;justify-content:space-around;align-items:center;padding:10px 0 28px;background:var(--dark);border-top:.5px solid var(--border);position:fixed;bottom:0;left:0;right:0;z-index:100}
+.ni{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;opacity:.28;transition:opacity .2s;padding:4px 10px}
+.ni.active{opacity:1}
+.ni-icon{font-size:19px}
+.ni-lbl{font-size:8px;letter-spacing:.06em;text-transform:uppercase;font-family:'DM Mono',monospace}
+.ni.active .ni-lbl{color:var(--neon)}
+.ni.gold.active .ni-lbl{color:var(--gold)}
+.ni.purple.active .ni-lbl{color:var(--purple)}
+.ni.coral.active .ni-lbl{color:var(--coral)}
+
+/* SHARED SCROLL BODY */
+.scroll-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.scroll-body::-webkit-scrollbar{display:none}
+
+/* MORNING BRIEFING CARD */
+.brief-wrap{flex-shrink:0;padding:12px 18px 0;position:relative}
+.brief-card{background:var(--s2);border:.5px solid var(--neon-b);border-radius:18px;overflow:hidden}
+.brief-header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 10px;border-bottom:.5px solid var(--border);cursor:pointer}
+.brief-header-l{display:flex;flex-direction:column;gap:2px}
+.brief-greeting{font-size:17px;font-weight:800;letter-spacing:-0.02em}
+.brief-greeting span{color:var(--neon)}
+.brief-date{font-size:9px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:.04em}
+.brief-meta{display:flex;align-items:center;gap:8px}
+.brief-progress{font-size:9px;color:var(--neon);font-family:'DM Mono',monospace}
+.brief-toggle{font-size:14px;color:var(--muted);transition:transform .2s}
+.brief-toggle.open{transform:rotate(180deg)}
+.brief-tasks{display:flex;flex-direction:column;gap:0}
+.brief-tasks.collapsed{display:none}
+.brief-task{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-bottom:.5px solid var(--border);cursor:pointer;transition:background .15s}
+.brief-task:last-child{border-bottom:none}
+.brief-task:active{background:var(--s3)}
+.brief-task.done .brief-task-text{text-decoration:line-through;color:var(--muted);opacity:.6}
+.brief-check{width:20px;height:20px;border-radius:6px;border:1.5px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:1px;transition:all .15s}
+.brief-task.done .brief-check{background:var(--neon);border-color:var(--neon)}
+.brief-check-inner{width:10px;height:10px;opacity:0;transition:opacity .15s}
+.brief-task.done .brief-check-inner{opacity:1}
+.brief-task-content{flex:1;min-width:0}
+.brief-task-text{font-size:13px;line-height:1.55;color:var(--text)}
+.brief-task-tag{display:inline-block;font-size:9px;font-family:'DM Mono',monospace;padding:2px 7px;border-radius:4px;margin-top:4px}
+.brief-add-row{display:flex;gap:8px;padding:10px 14px;border-top:.5px solid var(--border)}
+.brief-add-input{flex:1;background:var(--s3);border:.5px solid var(--border);border-radius:10px;padding:8px 12px;color:var(--text);font-family:'Syne',sans-serif;font-size:12px;outline:none}
+.brief-add-input::placeholder{color:var(--muted)}
+.brief-add-input:focus{border-color:var(--neon-b)}
+.brief-add-btn{padding:8px 14px;border-radius:10px;border:none;background:var(--neon);color:#000;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+
+/* CHAT */
+#chat{background:var(--dark)}
+.quick-pills{display:flex;gap:7px;overflow-x:auto;padding:10px 18px 8px;flex-shrink:0;-webkit-overflow-scrolling:touch}
+.quick-pills::-webkit-scrollbar{display:none}
+.qpill{background:var(--s2);border:.5px solid var(--border);border-radius:20px;padding:6px 13px;font-size:11px;color:var(--muted);white-space:nowrap;cursor:pointer;flex-shrink:0;font-family:'DM Mono',monospace;transition:all .2s}
+.qpill:active{border-color:var(--neon-b);color:var(--neon)}
+.chat-msgs{flex:1;overflow-y:auto;padding:8px 18px 190px;display:flex;flex-direction:column;gap:14px;-webkit-overflow-scrolling:touch}
+.chat-msgs::-webkit-scrollbar{display:none}
+.msg{display:flex;gap:9px;max-width:92%}
+.msg.user{align-self:flex-end;flex-direction:row-reverse}
+.msg.brooke{align-self:flex-start}
+.mav{width:30px;height:30px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.mav svg{width:18px;height:18px}
+.msg.brooke .mav{background:var(--s2);border:.5px solid var(--neon-b)}
+.msg.user .mav{background:var(--purple-dim);border:.5px solid var(--purple-b);font-size:13px;font-weight:700;color:var(--purple)}
+.mbub{padding:11px 14px;border-radius:18px;font-size:14px;line-height:1.7}
+.msg.brooke .mbub{background:var(--s2);border:.5px solid var(--border);border-bottom-left-radius:4px}
+.msg.user .mbub{background:var(--neon-dim);border:.5px solid var(--neon-b);border-bottom-right-radius:4px}
+.mbub strong{color:var(--neon);font-weight:600}
+.mbub em{color:var(--purple);font-style:normal}
+.typing-ind{display:flex;gap:5px;align-items:center;padding:12px 14px;background:var(--s2);border:.5px solid var(--border);border-radius:18px;border-bottom-left-radius:4px}
+.td{width:7px;height:7px;border-radius:50%;background:var(--neon);animation:tda 1s ease-in-out infinite}
+.td:nth-child(2){animation-delay:.2s;background:var(--purple)}
+.td:nth-child(3){animation-delay:.4s;background:var(--gold)}
+@keyframes tda{0%,100%{transform:scale(.6);opacity:.4}50%{transform:scale(1);opacity:1}}
+.cin-area{padding:10px 14px 14px;background:var(--dark);border-top:.5px solid var(--border);position:fixed;bottom:70px;left:0;right:0;z-index:50}
+.cin-row{display:flex;gap:8px;align-items:flex-end}
+.cin{flex:1;background:var(--s2);border:.5px solid var(--border);border-radius:18px;padding:11px 14px;color:var(--text);font-family:'Syne',sans-serif;font-size:14px;outline:none;resize:none;min-height:44px;max-height:120px;line-height:1.5;transition:border-color .2s}
+.cin:focus{border-color:var(--neon-b)}
+.cin::placeholder{color:var(--muted)}
+.ibtn{width:44px;height:44px;border-radius:13px;flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:19px;border:none;transition:all .15s}
+.sbtn{background:var(--neon);color:#000;font-weight:800;font-size:22px}
+.sbtn:active{transform:scale(.92)}
+.cbtn{background:var(--s2);border:.5px solid var(--border);color:var(--purple)}
+.mbtn{background:var(--s2);border:.5px solid var(--border);color:var(--neon)}
+.mbtn.rec{background:rgba(255,90,90,0.1);border-color:rgba(255,90,90,0.4);color:var(--danger)}
+.ipw{display:none;padding:6px 0;position:relative}
+.ipw.show{display:block}
+.ipr{max-height:88px;border-radius:10px;border:.5px solid var(--neon-b)}
+.irm{position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.85);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;cursor:pointer;font-weight:700}
+
+/* HISTORY PANEL */
+.hist-panel{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--dark);z-index:200;display:none;flex-direction:column}
+.hist-panel.show{display:flex}
+.hist-hdr{display:flex;align-items:center;justify-content:space-between;padding:54px 18px 14px;border-bottom:.5px solid var(--border);flex-shrink:0}
+.hist-title{font-size:22px;font-weight:800;letter-spacing:-0.02em}
+.hist-title span{color:var(--neon)}
+.hist-list{flex:1;overflow-y:auto;padding:16px 18px}
+.hist-list::-webkit-scrollbar{display:none}
+.hi{background:var(--s2);border:.5px solid var(--border);border-radius:14px;padding:13px;margin-bottom:9px;cursor:pointer}
+.hi:active{border-color:var(--neon-b)}
+.hi-d{font-size:9px;color:var(--neon);font-family:'DM Mono',monospace;margin-bottom:5px;letter-spacing:.04em}
+.hi-p{font-size:13px;color:var(--text);line-height:1.5}
+.hi-c{font-size:10px;color:var(--muted);margin-top:4px;font-family:'DM Mono',monospace}
+.hist-empty{text-align:center;padding:60px 20px;color:var(--muted);font-size:14px;line-height:2}
+
+/* CLIENTS */
+#clients{background:var(--dark)}
+.clients-body{flex:1;overflow-y:auto;padding:14px 18px 108px;display:flex;flex-direction:column;gap:14px}
+.clients-body::-webkit-scrollbar{display:none}
+.section-lbl{font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-family:'DM Mono',monospace}
+.add-client-btn{width:100%;padding:13px;border-radius:16px;border:.5px dashed var(--neon-b);background:var(--neon-dim);color:var(--neon);font-family:'Syne',sans-serif;font-size:14px;font-weight:600;cursor:pointer;text-align:center}
+.add-client-btn:active{background:rgba(57,255,106,0.15)}
+.client-card{background:var(--s2);border:.5px solid var(--border);border-radius:16px;overflow:hidden}
+.cc-top{display:flex;align-items:center;gap:12px;padding:14px}
+.cc-avatar{width:42px;height:42px;border-radius:12px;background:var(--neon-dim);border:.5px solid var(--neon-b);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:var(--neon);flex-shrink:0}
+.cc-info{flex:1;min-width:0}
+.cc-name{font-size:15px;font-weight:700;letter-spacing:-0.01em}
+.cc-role{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:1px}
+.cc-actions{display:flex;gap:6px}
+.cc-action{padding:6px 12px;border-radius:10px;font-size:11px;font-family:'DM Mono',monospace;border:.5px solid var(--border);color:var(--muted);cursor:pointer;background:var(--s3)}
+.cc-action:active{border-color:var(--neon-b);color:var(--neon)}
+.cc-action.danger:active{border-color:rgba(255,90,90,0.4);color:var(--danger)}
+.cc-details{padding:0 14px 14px;display:flex;flex-direction:column;gap:6px}
+.cc-detail{display:flex;gap:8px;font-size:12px}
+.cc-detail-lbl{color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;width:70px;flex-shrink:0;padding-top:1px}
+.cc-detail-val{color:var(--text);line-height:1.5}
+.cc-notes-tag{display:inline-block;background:var(--neon-dim);border:.5px solid var(--neon-b);color:var(--neon);font-size:10px;padding:2px 8px;border-radius:6px;font-family:'DM Mono',monospace;cursor:pointer;margin-top:4px}
+
+/* ADD CLIENT MODAL */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:300;display:none;align-items:flex-end}
+.modal-overlay.show{display:flex}
+.modal{background:var(--s2);border-radius:24px 24px 0 0;border-top:.5px solid var(--border);padding:24px 20px 40px;width:100%;max-height:88vh;overflow-y:auto}
+.modal::-webkit-scrollbar{display:none}
+.modal-title{font-size:20px;font-weight:800;letter-spacing:-0.02em;margin-bottom:18px}
+.modal-title span{color:var(--neon)}
+.form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.form-label{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:.05em}
+.form-input{background:var(--s3);border:.5px solid var(--border);border-radius:12px;padding:11px 13px;color:var(--text);font-family:'Syne',sans-serif;font-size:14px;outline:none;width:100%;transition:border-color .2s}
+.form-input:focus{border-color:var(--neon-b)}
+.form-input::placeholder{color:var(--muted)}
+.form-textarea{background:var(--s3);border:.5px solid var(--border);border-radius:12px;padding:11px 13px;color:var(--text);font-family:'Syne',sans-serif;font-size:14px;outline:none;width:100%;resize:none;min-height:80px;line-height:1.5;transition:border-color .2s}
+.form-textarea:focus{border-color:var(--neon-b)}
+.form-textarea::placeholder{color:var(--muted)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.modal-btns{display:flex;gap:10px;margin-top:18px}
+.modal-btn{flex:1;padding:13px;border-radius:14px;border:none;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer}
+.modal-btn.primary{background:var(--neon);color:#000}
+.modal-btn.secondary{background:var(--s3);border:.5px solid var(--border);color:var(--muted)}
+
+/* TALK */
+#talk{background:var(--dark)}
+.talk-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:24px 24px 108px}
+.t-top{text-align:center}
+.t-title{font-size:30px;font-weight:800;letter-spacing:-0.02em}
+.t-sub{font-size:11px;color:var(--muted);margin-top:7px;font-family:'DM Mono',monospace;letter-spacing:.05em}
+.t-tx{font-size:13px;color:var(--neon);margin-top:12px;min-height:20px;font-family:'DM Mono',monospace;text-align:center;padding:0 20px;line-height:1.6}
+.mic-zone{display:flex;flex-direction:column;align-items:center;gap:20px}
+.mic-rings{position:relative;width:196px;height:196px;display:flex;align-items:center;justify-content:center}
+.mr-o{position:absolute;width:196px;height:196px;border-radius:50%;border:1px solid var(--neon-b)}
+.mr-m{position:absolute;width:154px;height:154px;border-radius:50%;border:1px solid rgba(57,255,106,0.08)}
+.mic-main{width:110px;height:110px;border-radius:50%;background:var(--s2);border:2px solid var(--neon-b);display:flex;align-items:center;justify-content:center;font-size:40px;cursor:pointer;position:relative;z-index:2;user-select:none;-webkit-user-select:none;transition:all .2s}
+.mic-main.rec{border-color:var(--neon);background:rgba(57,255,106,0.07);box-shadow:0 0 0 4px rgba(57,255,106,0.12)}
+.wvf{display:flex;align-items:center;gap:3px;height:32px;opacity:0;transition:opacity .3s}
+.wvf.active{opacity:1}
+.wb{width:3px;border-radius:2px;background:var(--neon);animation:wv .8s ease-in-out infinite}
+.wb:nth-child(1){height:8px}.wb:nth-child(2){height:20px;animation-delay:.1s}.wb:nth-child(3){height:28px;animation-delay:.2s}.wb:nth-child(4){height:14px;animation-delay:.3s}.wb:nth-child(5){height:22px;animation-delay:.4s}.wb:nth-child(6){height:10px;animation-delay:.5s}.wb:nth-child(7){height:18px;animation-delay:.6s}
+@keyframes wv{0%,100%{transform:scaleY(.5);opacity:.6}50%{transform:scaleY(1.2);opacity:1}}
+.mic-hint{font-size:11px;color:var(--muted);text-align:center;line-height:1.8;font-family:'DM Mono',monospace}
+.mic-hint span{color:var(--neon)}
+.t-resp{width:100%;background:var(--s2);border:.5px solid var(--border);border-radius:18px;padding:14px;font-size:13px;line-height:1.8;min-height:60px;max-height:220px;overflow-y:auto;display:none}
+.t-resp.show{display:block}
+.t-resp::-webkit-scrollbar{display:none}
+
+/* EMAIL DRAFTER */
+#email{background:var(--dark)}
+.email-body{flex:1;overflow-y:auto;padding:14px 18px 108px;display:flex;flex-direction:column;gap:14px}
+.email-body::-webkit-scrollbar{display:none}
+.email-hero{background:linear-gradient(135deg,rgba(255,107,107,0.07),rgba(255,107,107,0.02));border:.5px solid var(--coral-b);border-radius:20px;padding:18px}
+.email-hero-title{font-size:18px;font-weight:800;letter-spacing:-0.02em;color:var(--coral);margin-bottom:4px}
+.email-hero-sub{font-size:12px;color:var(--muted);font-family:'DM Mono',monospace}
+.email-types{display:flex;gap:7px;flex-wrap:wrap}
+.etype{padding:7px 14px;border-radius:20px;font-size:11px;font-family:'DM Mono',monospace;border:.5px solid var(--border);color:var(--muted);cursor:pointer;background:var(--s2);transition:all .15s}
+.etype.active{border-color:var(--coral-b);color:var(--coral);background:var(--coral-dim)}
+.email-client-sel{background:var(--s2);border:.5px solid var(--border);border-radius:12px;padding:11px 13px;color:var(--text);font-family:'Syne',sans-serif;font-size:13px;outline:none;width:100%;transition:border-color .2s}
+.email-client-sel:focus{border-color:var(--coral-b)}
+.email-details-ta{background:var(--s2);border:.5px solid var(--border);border-radius:14px;padding:12px 14px;color:var(--text);font-family:'Syne',sans-serif;font-size:13px;outline:none;width:100%;resize:none;min-height:90px;line-height:1.6;transition:border-color .2s}
+.email-details-ta:focus{border-color:var(--coral-b)}
+.email-details-ta::placeholder{color:var(--muted)}
+.email-tone-row{display:flex;gap:7px}
+.etone{padding:6px 14px;border-radius:20px;font-size:11px;font-family:'DM Mono',monospace;border:.5px solid var(--border);color:var(--muted);cursor:pointer;background:var(--s2);transition:all .15s}
+.etone.active{border-color:var(--coral-b);color:var(--coral);background:var(--coral-dim)}
+.email-gen-btn{width:100%;padding:14px;border-radius:16px;border:none;background:var(--coral);color:#fff;font-family:'Syne',sans-serif;font-size:15px;font-weight:800;cursor:pointer;transition:all .15s}
+.email-gen-btn:active{transform:scale(.98)}
+.email-gen-btn:disabled{opacity:.4}
+.email-output{background:var(--s2);border:.5px solid var(--border);border-radius:16px;overflow:hidden;display:none}
+.email-output.show{display:block}
+.email-out-hdr{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:.5px solid var(--border)}
+.email-out-title{font-size:10px;font-weight:600;font-family:'DM Mono',monospace;letter-spacing:.07em;color:var(--coral)}
+.email-out-copy{font-size:10px;color:var(--coral);font-family:'DM Mono',monospace;cursor:pointer;padding:3px 8px;border-radius:6px;border:.5px solid var(--coral-b)}
+.email-subj{padding:11px 14px;border-bottom:.5px solid var(--border);font-size:12px;color:var(--muted);font-family:'DM Mono',monospace}
+.email-subj strong{color:var(--text)}
+.email-out-body{padding:13px 14px;font-size:13px;line-height:1.85;color:var(--text)}
+
+/* LISTING */
+#listing{background:var(--dark)}
+.lst-body{flex:1;overflow-y:auto;padding:14px 18px 108px;display:flex;flex-direction:column;gap:14px}
+.lst-body::-webkit-scrollbar{display:none}
+.lst-hero{background:linear-gradient(135deg,rgba(245,200,66,0.08),rgba(245,200,66,0.02));border:.5px solid var(--gold-b);border-radius:20px;padding:18px}
+.lst-hero-title{font-size:18px;font-weight:800;letter-spacing:-0.02em;color:var(--gold);margin-bottom:4px}
+.lst-hero-sub{font-size:12px;color:var(--muted);font-family:'DM Mono',monospace}
+.slbl{font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-family:'DM Mono',monospace}
+.lst-types{display:flex;gap:7px;flex-wrap:wrap}
+.lst-type{padding:6px 14px;border-radius:20px;font-size:11px;font-family:'DM Mono',monospace;border:.5px solid var(--border);color:var(--muted);cursor:pointer;transition:all .15s;background:var(--s2)}
+.lst-type.active{border-color:var(--gold-b);color:var(--gold);background:var(--gold-dim)}
+.lst-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.lst-field{display:flex;flex-direction:column;gap:5px}
+.lst-field.full{grid-column:1/-1}
+.lst-label{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:.04em}
+.lst-input{background:var(--s2);border:.5px solid var(--border);border-radius:12px;padding:10px 12px;color:var(--text);font-family:'Syne',sans-serif;font-size:13px;outline:none;width:100%;transition:border-color .2s}
+.lst-input:focus{border-color:var(--gold-b)}
+.lst-input::placeholder{color:var(--muted);font-size:12px}
+.lst-textarea{background:var(--s2);border:.5px solid var(--border);border-radius:12px;padding:10px 12px;color:var(--text);font-family:'Syne',sans-serif;font-size:13px;outline:none;width:100%;resize:none;min-height:70px;line-height:1.5;transition:border-color .2s}
+.lst-textarea:focus{border-color:var(--gold-b)}
+.lst-textarea::placeholder{color:var(--muted);font-size:12px}
+.lst-gen-btn{width:100%;padding:13px;border-radius:16px;border:none;background:var(--gold);color:#080808;font-family:'Syne',sans-serif;font-size:15px;font-weight:800;cursor:pointer;transition:all .15s}
+.lst-gen-btn:active{transform:scale(.98)}
+.lst-gen-btn:disabled{opacity:.4}
+.lst-out{background:var(--s2);border:.5px solid var(--border);border-radius:16px;overflow:hidden;display:none}
+.lst-out.show{display:block}
+.lst-out-hdr{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:.5px solid var(--border)}
+.lst-out-title{font-size:10px;font-weight:600;font-family:'DM Mono',monospace;letter-spacing:.07em}
+.lst-out-copy{font-size:10px;font-family:'DM Mono',monospace;cursor:pointer;padding:3px 8px;border-radius:6px;border:.5px solid var(--gold-b);color:var(--gold)}
+.lst-out-body{padding:13px 14px;font-size:13px;line-height:1.8;color:var(--text)}
+.lst-out-body strong{color:var(--gold);font-weight:600}
+
+/* SCAN */
+#scan{background:var(--dark)}
+.scan-body{flex:1;overflow-y:auto;padding:14px 18px 108px;display:flex;flex-direction:column;gap:14px}
+.scan-body::-webkit-scrollbar{display:none}
+.sdrop{border:1.5px dashed var(--purple-b);border-radius:22px;padding:28px 20px;display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;background:var(--purple-dim)}
+.sdrop-icon{font-size:44px}
+.sdrop-t{font-size:16px;font-weight:700}
+.sdrop-s{font-size:12px;color:var(--muted);text-align:center;line-height:1.7}
+.sprev{display:none;border-radius:18px;overflow:hidden;border:.5px solid var(--purple-b);position:relative}
+.sprev.show{display:block}
+.sprev img{width:100%;display:block;max-height:240px;object-fit:contain;background:var(--s2)}
+.sprev-ov{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.88));padding:20px 14px 14px;display:flex;justify-content:space-between;align-items:center}
+.sprev-fn{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace}
+.sprev-clr{font-size:10px;color:var(--danger);cursor:pointer;padding:4px 10px;border-radius:6px;border:.5px solid rgba(255,90,90,0.3)}
+.spr{display:flex;gap:8px}
+.spi{flex:1;background:var(--s2);border:.5px solid var(--border);border-radius:13px;padding:10px 13px;color:var(--text);font-family:'Syne',sans-serif;font-size:13px;outline:none}
+.spi:focus{border-color:var(--purple-b)}
+.spi::placeholder{color:var(--muted)}
+.sgo{padding:10px 16px;border-radius:13px;border:none;background:var(--purple);color:#fff;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap}
+.sgo:disabled{opacity:.4}
+.qgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.qb{background:var(--s2);border:.5px solid var(--border);border-radius:15px;padding:13px;cursor:pointer;text-align:left}
+.qb:active{border-color:var(--purple-b)}
+.qi{font-size:20px;margin-bottom:7px}
+.ql{font-size:12px;font-weight:600;line-height:1.4}
+.qs{font-size:10px;color:var(--muted);margin-top:3px;font-family:'DM Mono',monospace}
+.sres{background:var(--s2);border:.5px solid var(--border);border-radius:18px;padding:14px;font-size:13px;line-height:1.85;display:none}
+.sres.show{display:block}
+.sres-h{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:12px;border-bottom:.5px solid var(--border)}
+.sres-t{font-size:10px;font-weight:600;color:var(--purple);font-family:'DM Mono',monospace;letter-spacing:.07em}
+
+/* TOAST */
+.toast{position:fixed;bottom:118px;left:50%;transform:translateX(-50%);background:var(--s3);border:.5px solid var(--neon-b);color:var(--neon);padding:8px 16px;border-radius:20px;font-size:11px;font-family:'DM Mono',monospace;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;white-space:nowrap}
+.toast.show{opacity:1}
+
+/* SCRIPT ME */
+#scripts{background:var(--dark)}
+.scripts-body{flex:1;overflow-y:auto;padding:14px 18px 108px;display:flex;flex-direction:column;gap:14px}
+.scripts-body::-webkit-scrollbar{display:none}
+.scripts-hero{background:linear-gradient(135deg,rgba(57,255,106,0.07),rgba(57,255,106,0.02));border:.5px solid var(--neon-b);border-radius:20px;padding:18px}
+.scripts-hero-title{font-size:18px;font-weight:800;letter-spacing:-0.02em;color:var(--neon);margin-bottom:4px}
+.scripts-hero-sub{font-size:12px;color:var(--muted);font-family:'DM Mono',monospace}
+.script-cats{display:flex;flex-direction:column;gap:8px}
+.script-cat{background:var(--s2);border:.5px solid var(--border);border-radius:16px;overflow:hidden}
+.script-cat-hdr{display:flex;align-items:center;gap:12px;padding:14px;cursor:pointer}
+.script-cat-icon{font-size:22px;flex-shrink:0}
+.script-cat-info{flex:1}
+.script-cat-title{font-size:14px;font-weight:700}
+.script-cat-sub{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:2px}
+.script-cat-arr{color:var(--muted);font-size:16px;transition:transform .2s}
+.script-cat-arr.open{transform:rotate(90deg)}
+.script-items{display:none;border-top:.5px solid var(--border)}
+.script-item{padding:12px 14px;border-bottom:.5px solid var(--border);cursor:pointer;transition:background .15s}
+.script-item:last-child{border-bottom:none}
+.script-item:active{background:var(--s3)}
+.script-item-title{font-size:13px;font-weight:600;color:var(--text)}
+.script-item-desc{font-size:11px;color:var(--muted);margin-top:3px;font-family:'DM Mono',monospace}
+.script-result{background:var(--s2);border:.5px solid var(--neon-b);border-radius:16px;padding:14px;display:none}
+.script-result.show{display:block}
+.script-result-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:10px;border-bottom:.5px solid var(--border)}
+.script-result-title{font-size:10px;font-weight:600;color:var(--neon);font-family:'DM Mono',monospace;letter-spacing:.07em}
+.script-result-copy{font-size:10px;color:var(--neon);font-family:'DM Mono',monospace;cursor:pointer;padding:3px 8px;border-radius:6px;border:.5px solid var(--neon-b)}
+.script-result-body{font-size:13px;line-height:1.85;color:var(--text)}
+.script-custom-row{display:flex;flex-direction:column;gap:8px}
+.script-custom-ta{background:var(--s2);border:.5px solid var(--border);border-radius:14px;padding:11px 13px;color:var(--text);font-family:'Syne',sans-serif;font-size:13px;outline:none;width:100%;resize:none;min-height:80px;line-height:1.5}
+.script-custom-ta:focus{border-color:var(--neon-b)}
+.script-custom-ta::placeholder{color:var(--muted)}
+.script-custom-btn{width:100%;padding:12px;border-radius:14px;border:none;background:var(--neon);color:#000;font-family:'Syne',sans-serif;font-size:14px;font-weight:800;cursor:pointer}
+.script-custom-btn:disabled{opacity:.4}
+
+/* FORM HELPER */
+#forms{background:var(--dark)}
+.forms-body{flex:1;overflow-y:auto;padding:14px 18px 108px;display:flex;flex-direction:column;gap:14px}
+.forms-body::-webkit-scrollbar{display:none}
+.forms-hero{background:linear-gradient(135deg,rgba(155,89,255,0.07),rgba(155,89,255,0.02));border:.5px solid var(--purple-b);border-radius:20px;padding:18px}
+.forms-hero-title{font-size:18px;font-weight:800;letter-spacing:-0.02em;color:var(--purple);margin-bottom:4px}
+.forms-hero-sub{font-size:12px;color:var(--muted);font-family:'DM Mono',monospace}
+.form-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-card{background:var(--s2);border:.5px solid var(--border);border-radius:16px;padding:14px;cursor:pointer;transition:border-color .2s}
+.form-card:active{border-color:var(--purple-b)}
+.form-card-icon{font-size:24px;margin-bottom:8px}
+.form-card-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px}
+.form-card-desc{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;line-height:1.5}
+.form-result{background:var(--s2);border:.5px solid var(--purple-b);border-radius:16px;padding:14px;display:none}
+.form-result.show{display:block}
+.form-result-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:10px;border-bottom:.5px solid var(--border)}
+.form-result-title{font-size:10px;font-weight:600;color:var(--purple);font-family:'DM Mono',monospace;letter-spacing:.07em}
+.form-result-copy{font-size:10px;color:var(--purple);font-family:'DM Mono',monospace;cursor:pointer;padding:3px 8px;border-radius:6px;border:.5px solid var(--purple-b)}
+.form-result-body{font-size:13px;line-height:1.85;color:var(--text)}
+.form-q-input{background:var(--s2);border:.5px solid var(--border);border-radius:14px;padding:11px 13px;color:var(--text);font-family:'Syne',sans-serif;font-size:13px;outline:none;width:100%;transition:border-color .2s}
+.form-q-input:focus{border-color:var(--purple-b)}
+.form-q-input::placeholder{color:var(--muted)}
+.form-ask-btn{width:100%;padding:12px;border-radius:14px;border:none;background:var(--purple);color:#fff;font-family:'Syne',sans-serif;font-size:14px;font-weight:800;cursor:pointer}
+.form-ask-btn:disabled{opacity:.4}
+
+/* BRAND BUILDER */
+#brand{background:var(--dark)}
+.brand-body{flex:1;overflow-y:auto;padding:14px 18px 108px;display:flex;flex-direction:column;gap:14px}
+.brand-body::-webkit-scrollbar{display:none}
+.brand-hero{background:linear-gradient(135deg,rgba(245,200,66,0.07),rgba(245,200,66,0.02));border:.5px solid var(--gold-b);border-radius:20px;padding:18px}
+.brand-hero-title{font-size:18px;font-weight:800;letter-spacing:-0.02em;color:var(--gold);margin-bottom:4px}
+.brand-hero-sub{font-size:12px;color:var(--muted);font-family:'DM Mono',monospace}
+.brand-field{display:flex;flex-direction:column;gap:6px}
+.brand-label{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:.05em}
+.brand-input{background:var(--s2);border:.5px solid var(--border);border-radius:12px;padding:11px 13px;color:var(--text);font-family:'Syne',sans-serif;font-size:13px;outline:none;width:100%;transition:border-color .2s}
+.brand-input:focus{border-color:var(--gold-b)}
+.brand-input::placeholder{color:var(--muted)}
+.brand-ta{background:var(--s2);border:.5px solid var(--border);border-radius:12px;padding:11px 13px;color:var(--text);font-family:'Syne',sans-serif;font-size:13px;outline:none;width:100%;resize:none;min-height:70px;line-height:1.5;transition:border-color .2s}
+.brand-ta:focus{border-color:var(--gold-b)}
+.brand-ta::placeholder{color:var(--muted)}
+.brand-gen-btn{width:100%;padding:13px;border-radius:16px;border:none;background:var(--gold);color:#080808;font-family:'Syne',sans-serif;font-size:15px;font-weight:800;cursor:pointer}
+.brand-gen-btn:disabled{opacity:.4}
+.brand-out{background:var(--s2);border:.5px solid var(--border);border-radius:16px;overflow:hidden;display:none}
+.brand-out.show{display:block}
+.brand-out-hdr{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:.5px solid var(--border)}
+.brand-out-title{font-size:10px;font-weight:600;font-family:'DM Mono',monospace;letter-spacing:.07em}
+.brand-out-copy{font-size:10px;font-family:'DM Mono',monospace;cursor:pointer;padding:3px 8px;border-radius:6px;border:.5px solid var(--gold-b);color:var(--gold)}
+.brand-out-body{padding:13px 14px;font-size:13px;line-height:1.85;color:var(--text)}
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div class="screen active" id="splash">
+  <div class="splash-icon">
+    <svg viewBox="0 0 56 56" fill="none">
+      <path d="M8 30L28 12L48 30" stroke="#39FF6A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M12 26L12 46L44 46L44 26" stroke="#39FF6A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="22" y="34" width="12" height="12" rx="2" stroke="#39FF6A" stroke-width="2" fill="none"/>
+      <text x="28" y="31" text-anchor="middle" font-family="Syne,sans-serif" font-weight="800" font-size="13" fill="#39FF6A">B</text>
+    </svg>
+  </div>
+  <div><div class="splash-name">Brook<span>e</span></div><div class="splash-tag">Your broker. In your pocket.</div></div>
+  <div class="splash-dots"><div class="sdot"></div><div class="sdot"></div><div class="sdot"></div></div>
+</div>
+
+<!-- CHAT -->
+<div class="screen" id="chat">
+  <div class="hdr">
+    <div class="hdr-l">
+      <div class="hdr-icon"><svg viewBox="0 0 22 22" fill="none"><path d="M2 11L11 3L20 11" stroke="#39FF6A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9.5V19H18V9.5" stroke="#39FF6A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="8" y="13" width="6" height="6" rx="1" stroke="#39FF6A" stroke-width="1.5" fill="none"/><text x="11" y="12" text-anchor="middle" font-family="Syne,sans-serif" font-weight="800" font-size="5.5" fill="#39FF6A">B</text></svg></div>
+      <div><div class="hdr-n">Brook<span>e</span></div><div class="hdr-st" id="cst">Online &middot; Hi-Desert</div></div>
+    </div>
+    <div class="hbtns">
+      <div class="hbtn" onclick="showHist()">&#128336;</div>
+      <div class="hbtn" onclick="newChat()">&#9998;</div>
+    </div>
+  </div>
+  <div id="briefingCard"></div>
+  <div class="quick-pills">
+    <div class="qpill" onclick="quickAsk('What forms do I need for a new listing in California?')">New listing forms</div>
+    <div class="qpill" onclick="quickAsk('What are the Joshua Tree STR permit rules for 2026?')">STR rules</div>
+    <div class="qpill" onclick="quickAsk('What is the difference between Active Under Contract and Pending in CRMLS?')">MLS statuses</div>
+    <div class="qpill" onclick="quickAsk('Explain fiduciary duty for a California independent broker.')">Fiduciary duty</div>
+    <div class="qpill" onclick="quickAsk('Walk me through the appraisal contingency timeline on the 2026 RPA.')">RPA timelines</div>
+    <div class="qpill" onclick="quickAsk('What disclosures are required for a residential sale in California in 2026?')">Disclosures</div>
+  </div>
+  <div class="chat-msgs" id="chatMsgs"></div>
+  <div class="cin-area">
+    <div class="ipw" id="ipw"><img class="ipr" id="ipr" src="" alt=""><div class="irm" onclick="rmImg()">X</div></div>
+    <div class="cin-row">
+      <div class="ibtn cbtn" onclick="document.getElementById('camIn').click()">&#128247;</div>
+      <textarea class="cin" id="cin" placeholder="Ask Brooke anything..." rows="1" oninput="aR(this)" onkeydown="oK(event)"></textarea>
+      <div class="ibtn mbtn" id="mbi" onclick="togMic()">&#127897;</div>
+      <div class="ibtn sbtn" onclick="sendMsg()">&#8593;</div>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORY -->
+<div class="hist-panel" id="histPanel">
+  <div class="hist-hdr"><div class="hist-title">Chat <span>History</span></div><div class="hbtn" onclick="hideHist()">X</div></div>
+  <div class="hist-list" id="histList"></div>
+</div>
+
+<!-- CLIENTS -->
+<div class="screen" id="clients">
+  <div class="hdr">
+    <div class="hdr-l">
+      <div class="hdr-icon"><svg viewBox="0 0 22 22" fill="none"><path d="M2 11L11 3L20 11" stroke="#39FF6A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9.5V19H18V9.5" stroke="#39FF6A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="8" y="13" width="6" height="6" rx="1" stroke="#39FF6A" stroke-width="1.5" fill="none"/></svg></div>
+      <div><div class="hdr-n">Brook<span>e</span></div><div class="hdr-st" style="color:var(--neon)">Client Memory</div></div>
+    </div>
+  </div>
+  <div class="clients-body">
+    <div class="section-lbl">Your clients</div>
+    <div class="add-client-btn" onclick="openAddClient()">+ Add New Client</div>
+    <div id="clientsList"></div>
+  </div>
+</div>
+
+<!-- ADD CLIENT MODAL -->
+<div class="modal-overlay" id="clientModal">
+  <div class="modal">
+    <div class="modal-title">Add <span>Client</span></div>
+    <div class="form-group">
+      <div class="form-label">Full name</div>
+      <input class="form-input" id="cName" placeholder="Maria Garcia" type="text">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <div class="form-label">Type</div>
+        <select class="form-input" id="cType">
+          <option>Buyer</option>
+          <option>Seller</option>
+          <option>Investor</option>
+          <option>Both</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Budget</div>
+        <input class="form-input" id="cBudget" placeholder="$650,000" type="text">
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="form-label">Looking in</div>
+      <input class="form-input" id="cArea" placeholder="Joshua Tree, Yucca Valley" type="text">
+    </div>
+    <div class="form-group">
+      <div class="form-label">Phone / Email</div>
+      <input class="form-input" id="cContact" placeholder="(760) 555-0100" type="text">
+    </div>
+    <div class="form-group">
+      <div class="form-label">Notes (goals, must-haves, STR interest, etc.)</div>
+      <textarea class="form-textarea" id="cNotes" placeholder="Wants STR potential, needs 3br min, prefers single story, pre-approved at $650k, closing flexibility important..."></textarea>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn secondary" onclick="closeAddClient()">Cancel</button>
+      <button class="modal-btn primary" onclick="saveClient()">Save Client</button>
+    </div>
+  </div>
+</div>
+
+<!-- TALK -->
+<div class="screen" id="talk">
+  <div class="hdr">
+    <div class="hdr-l">
+      <div class="hdr-icon"><svg viewBox="0 0 22 22" fill="none"><path d="M2 11L11 3L20 11" stroke="#39FF6A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9.5V19H18V9.5" stroke="#39FF6A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="8" y="13" width="6" height="6" rx="1" stroke="#39FF6A" stroke-width="1.5" fill="none"/></svg></div>
+      <div><div class="hdr-n">Brook<span>e</span></div><div class="hdr-st">Voice Mode</div></div>
+    </div>
+  </div>
+  <div class="talk-body">
+    <div class="t-top">
+      <div class="t-title">Ask Anything</div>
+      <div class="t-sub">Hands-free &middot; Perfect for driving</div>
+      <div class="t-tx" id="tTx">Hold the mic and speak</div>
+    </div>
+    <div class="mic-zone">
+      <div class="wvf" id="wvf"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
+      <div class="mic-rings">
+        <div class="mr-o"></div><div class="mr-m"></div>
+        <div class="mic-main" id="micM" onmousedown="startV()" onmouseup="stopV()" ontouchstart="startV(event)" ontouchend="stopV(event)">&#127897;</div>
+      </div>
+      <div class="mic-hint">Hold to speak &middot; Release for answer<br><span>Brooke reads the answer aloud</span></div>
+    </div>
+    <div class="t-resp" id="tResp"></div>
+  </div>
+</div>
+
+<!-- EMAIL DRAFTER -->
+<div class="screen" id="email">
+  <div class="hdr">
+    <div class="hdr-l">
+      <div class="hdr-icon" style="border-color:var(--coral-b)"><svg viewBox="0 0 22 22" fill="none"><path d="M2 11L11 3L20 11" stroke="#FF6B6B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9.5V19H18V9.5" stroke="#FF6B6B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="8" y="13" width="6" height="6" rx="1" stroke="#FF6B6B" stroke-width="1.5" fill="none"/></svg></div>
+      <div><div class="hdr-n" style="color:var(--text)">Brook<span style="color:var(--coral)">e</span></div><div class="hdr-st" style="color:var(--coral)">Email Drafter</div></div>
+    </div>
+  </div>
+  <div class="email-body">
+    <div class="email-hero">
+      <div class="email-hero-title">&#9993; Email Drafter</div>
+      <div class="email-hero-sub">Tell Brooke what you need. She writes it. You hit send.</div>
+    </div>
+    <div>
+      <div class="slbl" style="margin-bottom:8px">Email type</div>
+      <div class="email-types">
+        <div class="etype active" onclick="selEtype(this)">Buyer follow-up</div>
+        <div class="etype" onclick="selEtype(this)">Offer submitted</div>
+        <div class="etype" onclick="selEtype(this)">Showing request</div>
+        <div class="etype" onclick="selEtype(this)">Price reduction</div>
+        <div class="etype" onclick="selEtype(this)">Closing reminder</div>
+        <div class="etype" onclick="selEtype(this)">Intro to listing</div>
+        <div class="etype" onclick="selEtype(this)">Custom</div>
+      </div>
+    </div>
+    <div>
+      <div class="slbl" style="margin-bottom:8px">Client (optional)</div>
+      <select class="email-client-sel" id="emailClientSel">
+        <option value="">No specific client</option>
+      </select>
+    </div>
+    <div>
+      <div class="slbl" style="margin-bottom:8px">Key details to include</div>
+      <textarea class="email-details-ta" id="emailDetails" placeholder="Property address, deadline tomorrow, offer was $425k, inspection contingency expires Friday, buyer is excited but nervous about the well..."></textarea>
+    </div>
+    <div>
+      <div class="slbl" style="margin-bottom:8px">Tone</div>
+      <div class="email-tone-row">
+        <div class="etone active" onclick="selEtone(this)">Warm</div>
+        <div class="etone" onclick="selEtone(this)">Professional</div>
+        <div class="etone" onclick="selEtone(this)">Urgent</div>
+        <div class="etone" onclick="selEtone(this)">Celebratory</div>
+      </div>
+    </div>
+    <button class="email-gen-btn" id="emailGenBtn" onclick="genEmail()">Draft Email</button>
+    <div class="email-output" id="emailOutput">
+      <div class="email-out-hdr">
+        <span class="email-out-title">BROOKE DRAFT</span>
+        <span class="email-out-copy" onclick="copyEmailOut()">Copy all</span>
+      </div>
+      <div class="email-subj" id="emailSubjLine"></div>
+      <div class="email-out-body" id="emailOutBody"></div>
+    </div>
+  </div>
+</div>
+
+<!-- LISTING -->
+<div class="screen" id="listing">
+  <div class="hdr">
+    <div class="hdr-l">
+      <div class="hdr-icon" style="border-color:var(--gold-b)"><svg viewBox="0 0 22 22" fill="none"><path d="M2 11L11 3L20 11" stroke="#F5C842" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9.5V19H18V9.5" stroke="#F5C842" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="8" y="13" width="6" height="6" rx="1" stroke="#F5C842" stroke-width="1.5" fill="none"/></svg></div>
+      <div><div class="hdr-n" style="color:var(--text)">Brook<span style="color:var(--gold)">e</span></div><div class="hdr-st" style="color:var(--gold)">Listing Generator</div></div>
+    </div>
+  </div>
+  <div class="lst-body">
+    <div class="lst-hero">
+      <div class="lst-hero-title">&#127968; Listing Generator</div>
+      <div class="lst-hero-sub">Fill in the details. Get MLS, Zillow, and Instagram in 30 seconds.</div>
+    </div>
+    <div><div class="slbl" style="margin-bottom:8px">Property type</div>
+      <div class="lst-types">
+        <div class="lst-type active" onclick="selType(this)">Residential</div>
+        <div class="lst-type" onclick="selType(this)">Condo</div>
+        <div class="lst-type" onclick="selType(this)">Land</div>
+        <div class="lst-type" onclick="selType(this)">Income</div>
+        <div class="lst-type" onclick="selType(this)">Cabin</div>
+      </div>
+    </div>
+    <div class="lst-grid">
+      <div class="lst-field"><div class="lst-label">Bedrooms</div><input class="lst-input" id="lBeds" type="number" placeholder="3" min="0" max="20"></div>
+      <div class="lst-field"><div class="lst-label">Bathrooms</div><input class="lst-input" id="lBaths" type="number" placeholder="2" min="0" max="20"></div>
+      <div class="lst-field"><div class="lst-label">Sq Ft</div><input class="lst-input" id="lSqft" type="number" placeholder="1200"></div>
+      <div class="lst-field"><div class="lst-label">Lot Size</div><input class="lst-input" id="lLot" type="text" placeholder="0.5 acres"></div>
+      <div class="lst-field"><div class="lst-label">Asking Price</div><input class="lst-input" id="lPrice" type="text" placeholder="$425,000"></div>
+      <div class="lst-field"><div class="lst-label">City</div><input class="lst-input" id="lCity" type="text" placeholder="Yucca Valley"></div>
+      <div class="lst-field full"><div class="lst-label">Key Features</div><input class="lst-input" id="lFeatures" type="text" placeholder="solar panels, detached garage, mountain views, new HVAC"></div>
+      <div class="lst-field full"><div class="lst-label">STR Potential</div>
+        <div class="lst-types"><div class="lst-type active" id="strYes" onclick="selStr('yes')">Yes - highlight it</div><div class="lst-type" id="strNo" onclick="selStr('no')">No</div><div class="lst-type" id="strMaybe" onclick="selStr('maybe')">Possible</div></div>
+      </div>
+      <div class="lst-field full"><div class="lst-label">Extra notes (optional)</div><textarea class="lst-textarea" id="lNotes" placeholder="Recently renovated kitchen, backs up to national park land..."></textarea></div>
+    </div>
+    <button class="lst-gen-btn" id="lstGenBtn" onclick="genListing()">Generate Listing Copy</button>
+    <div id="lstOutputs" style="display:flex;flex-direction:column;gap:12px">
+      <div class="lst-out" id="outMLS"><div class="lst-out-hdr"><span class="lst-out-title" style="color:var(--neon)">MLS PUBLIC REMARKS</span><span class="lst-out-copy" style="border-color:var(--neon-b);color:var(--neon)" onclick="copyOut('mlsText')">Copy</span></div><div class="lst-out-body" id="mlsText"></div></div>
+      <div class="lst-out" id="outZillow"><div class="lst-out-hdr"><span class="lst-out-title" style="color:var(--purple)">ZILLOW / REALTOR.COM</span><span class="lst-out-copy" style="border-color:var(--purple-b);color:var(--purple)" onclick="copyOut('zillowText')">Copy</span></div><div class="lst-out-body" id="zillowText"></div></div>
+      <div class="lst-out" id="outIG"><div class="lst-out-hdr"><span class="lst-out-title" style="color:var(--gold)">INSTAGRAM CAPTION</span><span class="lst-out-copy" onclick="copyOut('igText')">Copy</span></div><div class="lst-out-body" id="igText"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SCAN -->
+<div class="screen" id="scan">
+  <div class="hdr">
+    <div class="hdr-l">
+      <div class="hdr-icon" style="border-color:var(--purple-b)"><svg viewBox="0 0 22 22" fill="none"><path d="M2 11L11 3L20 11" stroke="#9B59FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9.5V19H18V9.5" stroke="#9B59FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="8" y="13" width="6" height="6" rx="1" stroke="#9B59FF" stroke-width="1.5" fill="none"/></svg></div>
+      <div><div class="hdr-n" style="color:var(--text)">Brook<span style="color:var(--purple)">e</span></div><div class="hdr-st" style="color:var(--purple)">Document Scanner</div></div>
+    </div>
+  </div>
+  <div class="scan-body">
+    <div class="slbl">Photograph or upload</div>
+    <div class="sdrop" onclick="document.getElementById('scanIn').click()"><div class="sdrop-icon">&#128196;</div><div class="sdrop-t">Scan a Document</div><div class="sdrop-s">Photograph a contract, disclosure, MLS listing, or point at your laptop screen</div></div>
+    <div class="sprev" id="sprev"><img id="simg" src="" alt=""><div class="sprev-ov"><span class="sprev-fn" id="sfn">document.jpg</span><span class="sprev-clr" onclick="clrScan()">Remove</span></div></div>
+    <div class="spr"><input class="spi" id="spi" placeholder="What should Brooke check?" value="Check for missing signatures, required California disclosures, and compliance issues."><button class="sgo" id="sgoBtn" onclick="doScan()">Analyze</button></div>
+    <div class="slbl">Quick actions</div>
+    <div class="qgrid">
+      <div class="qb" onclick="qScan('Check for every missing signature, initial, and required sign line on this California real estate document.')"><div class="qi">&#9997;</div><div class="ql">Check Signatures</div><div class="qs">Missing initials</div></div>
+      <div class="qb" onclick="qScan('I am pointing my phone at my laptop screen. Tell me exactly what you see and what I should click next.')"><div class="qi">&#128187;</div><div class="ql">Screen Guide</div><div class="qs">Point phone at laptop</div></div>
+      <div class="qb" onclick="qScan('Audit this MLS listing for compliance issues and improve the public remarks for CRMLS Hi-Desert standards.')"><div class="qi">&#127968;</div><div class="ql">MLS Audit</div><div class="qs">Listing compliance</div></div>
+      <div class="qb" onclick="qScan('Scan for ALL required California real estate disclosures. Flag anything missing required by California law.')"><div class="qi">&#9888;</div><div class="ql">Disclosure Check</div><div class="qs">Required CA disclosures</div></div>
+    </div>
+    <div class="sres" id="sres"><div class="sres-h"><span>&#128269;</span><span class="sres-t">BROOKE ANALYSIS</span></div><div id="sresT"></div></div>
+  </div>
+</div>
+
+<!-- SCRIPT ME -->
+<div class="screen" id="scripts">
+  <div class="hdr">
+    <div class="hdr-l">
+      <div class="hdr-icon" style="border-color:var(--neon-b)"><svg viewBox="0 0 22 22" fill="none"><path d="M2 11L11 3L20 11" stroke="#39FF6A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9.5V19H18V9.5" stroke="#39FF6A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="8" y="13" width="6" height="6" rx="1" stroke="#39FF6A" stroke-width="1.5" fill="none"/></svg></div>
+      <div><div class="hdr-n">Brook<span>e</span></div><div class="hdr-st" style="color:var(--neon)">Script Me</div></div>
+    </div>
+  </div>
+  <div class="scripts-body">
+    <div class="scripts-hero">
+      <div class="scripts-hero-title">&#128172; Script Me</div>
+      <div class="scripts-hero-sub">Exact words for every tough client situation.</div>
+    </div>
+    <div class="script-cats">
+      <div class="script-cat">
+        <div class="script-cat-hdr" onclick="toggleScriptCat(this)">
+          <div class="script-cat-icon">&#128200;</div>
+          <div class="script-cat-info"><div class="script-cat-title">Price &amp; Offers</div><div class="script-cat-sub">Negotiations, reductions, low offers</div></div>
+          <div class="script-cat-arr">&#9654;</div>
+        </div>
+        <div class="script-items">
+          <div class="script-item" onclick="getScript('How to tell a seller their price needs to come down based on current Hi-Desert market comps. Be tactful, data-driven, and reassuring.')"><div class="script-item-title">Asking seller to reduce price</div><div class="script-item-desc">Tactful, data-driven approach</div></div>
+          <div class="script-item" onclick="getScript('How to present a low offer to a seller without offending them. Frame it positively and keep the deal alive.')"><div class="script-item-title">Presenting a low offer to seller</div><div class="script-item-desc">Keep the deal alive</div></div>
+          <div class="script-item" onclick="getScript('How to tell a buyer their offer was rejected and encourage them to come back stronger without losing their confidence.')"><div class="script-item-title">Telling buyer their offer was rejected</div><div class="script-item-desc">Keep buyer motivated</div></div>
+          <div class="script-item" onclick="getScript('How to negotiate a counter offer on behalf of a buyer in California. What to say to the listing agent professionally.')"><div class="script-item-title">Counter offer negotiation</div><div class="script-item-desc">What to say to listing agent</div></div>
+        </div>
+      </div>
+      <div class="script-cat">
+        <div class="script-cat-hdr" onclick="toggleScriptCat(this)">
+          <div class="script-cat-icon">&#128269;</div>
+          <div class="script-cat-info"><div class="script-cat-title">Inspections &amp; Issues</div><div class="script-cat-sub">Problems, repairs, red flags</div></div>
+          <div class="script-cat-arr">&#9654;</div>
+        </div>
+        <div class="script-items">
+          <div class="script-item" onclick="getScript('How to explain a bad inspection report to a buyer without panicking them. Keep them calm and focused on solutions.')"><div class="script-item-title">Bad inspection report</div><div class="script-item-desc">Keep buyer calm and solution-focused</div></div>
+          <div class="script-item" onclick="getScript('How to ask the seller to make repairs or give credits after inspection in California. Professional and firm.')"><div class="script-item-title">Requesting repairs or credits</div><div class="script-item-desc">Professional and firm approach</div></div>
+          <div class="script-item" onclick="getScript('How to talk a buyer through an as-is property sale in California. Explain the risks clearly and protect yourself.')"><div class="script-item-title">As-is property conversation</div><div class="script-item-desc">Explain risks, protect yourself</div></div>
+        </div>
+      </div>
+      <div class="script-cat">
+        <div class="script-cat-hdr" onclick="toggleScriptCat(this)">
+          <div class="script-cat-icon">&#128165;</div>
+          <div class="script-cat-info"><div class="script-cat-title">Tough Moments</div><div class="script-cat-sub">Cold feet, cancellations, difficult clients</div></div>
+          <div class="script-cat-arr">&#9654;</div>
+        </div>
+        <div class="script-items">
+          <div class="script-item" onclick="getScript('How to talk to a buyer who is getting cold feet and wants to cancel the contract. Calm them down and explore their real concerns.')"><div class="script-item-title">Buyer getting cold feet</div><div class="script-item-desc">Address real concerns calmly</div></div>
+          <div class="script-item" onclick="getScript('How to handle a seller who wants to cancel the listing agreement early. Protect yourself legally and keep the relationship.')"><div class="script-item-title">Seller wants to cancel listing</div><div class="script-item-desc">Protect yourself, keep relationship</div></div>
+          <div class="script-item" onclick="getScript('How to respond when a client blames you for something that went wrong in a transaction. Stay professional and de-escalate.')"><div class="script-item-title">Client blaming you for something</div><div class="script-item-desc">Stay professional, de-escalate</div></div>
+          <div class="script-item" onclick="getScript('How to fire a difficult client professionally in California real estate. Protect your license and exit gracefully.')"><div class="script-item-title">Letting go of a difficult client</div><div class="script-item-desc">Exit gracefully, protect license</div></div>
+        </div>
+      </div>
+      <div class="script-cat">
+        <div class="script-cat-hdr" onclick="toggleScriptCat(this)">
+          <div class="script-cat-icon">&#127968;</div>
+          <div class="script-cat-info"><div class="script-cat-title">Listings &amp; Showings</div><div class="script-cat-sub">Open houses, multiple offers, expired listings</div></div>
+          <div class="script-cat-arr">&#9654;</div>
+        </div>
+        <div class="script-items">
+          <div class="script-item" onclick="getScript('How to present a multiple offer situation to a seller in California. Explain their options clearly and help them decide.')"><div class="script-item-title">Multiple offers on a listing</div><div class="script-item-desc">Help seller navigate their options</div></div>
+          <div class="script-item" onclick="getScript('How to approach an expired listing owner in the Hi-Desert and convince them to list with you instead.')"><div class="script-item-title">Expired listing pitch</div><div class="script-item-desc">Win the listing from a competitor</div></div>
+          <div class="script-item" onclick="getScript('What to say at an open house when someone asks why they should work with an independent broker instead of a big company like Coldwell Banker.')"><div class="script-item-title">Why work with an independent broker?</div><div class="script-item-desc">Your pitch vs big box brokerages</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="section-lbl">Custom situation</div>
+    <div class="script-custom-row">
+      <textarea class="script-custom-ta" id="scriptCustomTa" placeholder="Describe your situation... e.g. My buyer wants to waive the appraisal contingency but I'm worried about the risk. What do I say?"></textarea>
+      <button class="script-custom-btn" id="scriptCustomBtn" onclick="getCustomScript()">Get My Script</button>
+    </div>
+    <div class="script-result" id="scriptResult">
+      <div class="script-result-hdr"><span class="script-result-title">BROOKE SCRIPT</span><span class="script-result-copy" onclick="copyEl('scriptResultBody')">Copy</span></div>
+      <div class="script-result-body" id="scriptResultBody"></div>
+    </div>
+  </div>
+</div>
+
+<!-- FORM HELPER -->
+<div class="screen" id="forms">
+  <div class="hdr">
+    <div class="hdr-l">
+      <div class="hdr-icon" style="border-color:var(--purple-b)"><svg viewBox="0 0 22 22" fill="none"><path d="M2 11L11 3L20 11" stroke="#9B59FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9.5V19H18V9.5" stroke="#9B59FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="8" y="13" width="6" height="6" rx="1" stroke="#9B59FF" stroke-width="1.5" fill="none"/></svg></div>
+      <div><div class="hdr-n" style="color:var(--text)">Brook<span style="color:var(--purple)">e</span></div><div class="hdr-st" style="color:var(--purple)">Form Helper</div></div>
+    </div>
+  </div>
+  <div class="forms-body">
+    <div class="forms-hero">
+      <div class="forms-hero-title">&#128196; Form Helper</div>
+      <div class="forms-hero-sub">Plain English walkthrough of every C.A.R. form. Tap a form to get started.</div>
+    </div>
+    <div class="section-lbl">Pick a form</div>
+    <div class="form-cards">
+      <div class="form-card" onclick="explainForm('RPA','Residential Purchase Agreement','Walk me through the 2026 California RPA form section by section in plain English. What does each part mean and what should I watch out for?')">
+        <div class="form-card-icon">&#127968;</div>
+        <div class="form-card-name">RPA</div>
+        <div class="form-card-desc">Residential Purchase Agreement 2026</div>
+      </div>
+      <div class="form-card" onclick="explainForm('BRBC','Buyer Rep &amp; Broker Comp','Explain the 2026 BRBC form in plain English. What are the new compliance rules for buyer agents and what must be signed before showing properties?')">
+        <div class="form-card-icon">&#129309;</div>
+        <div class="form-card-name">BRBC</div>
+        <div class="form-card-desc">Buyer Rep &amp; Broker Compensation</div>
+      </div>
+      <div class="form-card" onclick="explainForm('RLA','Residential Listing Agreement','Walk me through the California RLA form. What am I committing to as the listing agent and what should I explain to my seller?')">
+        <div class="form-card-icon">&#128221;</div>
+        <div class="form-card-name">RLA</div>
+        <div class="form-card-desc">Residential Listing Agreement</div>
+      </div>
+      <div class="form-card" onclick="explainForm('TDS','Transfer Disclosure Statement','Explain the California TDS form. What must the seller disclose in 2026 including the new tobacco and AI photo disclosure requirements?')">
+        <div class="form-card-icon">&#128203;</div>
+        <div class="form-card-name">TDS</div>
+        <div class="form-card-desc">Transfer Disclosure Statement 2026</div>
+      </div>
+      <div class="form-card" onclick="explainForm('Agency Disclosure','AD Form','Explain the California Agency Disclosure form. When must it be signed, who signs it, and what happens if I forget?')">
+        <div class="form-card-icon">&#9878;</div>
+        <div class="form-card-name">Agency Disc.</div>
+        <div class="form-card-desc">Agency Disclosure - when and how</div>
+      </div>
+      <div class="form-card" onclick="explainForm('AVID','Agent Visual Inspection Disclosure','Explain the AVID form. What am I required to visually inspect as an agent and what do I write in each section?')">
+        <div class="form-card-icon">&#128065;</div>
+        <div class="form-card-name">AVID</div>
+        <div class="form-card-desc">Agent Visual Inspection Disclosure</div>
+      </div>
+      <div class="form-card" onclick="explainForm('CR','Contingency Removal','Explain the California Contingency Removal form. When do I use it, what are the timelines, and what happens if we miss the deadline?')">
+        <div class="form-card-icon">&#9200;</div>
+        <div class="form-card-name">Contingency</div>
+        <div class="form-card-desc">Contingency Removal timelines</div>
+      </div>
+      <div class="form-card" onclick="explainForm('NHD','Natural Hazard Disclosure','Explain the California Natural Hazard Disclosure. What zones apply to Hi-Desert properties and what am I required to tell buyers?')">
+        <div class="form-card-icon">&#127956;</div>
+        <div class="form-card-name">NHD</div>
+        <div class="form-card-desc">Natural Hazard Disclosure - Hi-Desert</div>
+      </div>
+    </div>
+    <div class="section-lbl">Ask about any form</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <input class="form-q-input" id="formQuestion" placeholder="e.g. What goes in section 3B of the RPA? or When do I use a counter offer form?">
+      <button class="form-ask-btn" id="formAskBtn" onclick="askFormQuestion()">Ask Brooke</button>
+    </div>
+    <div class="form-result" id="formResult">
+      <div class="form-result-hdr"><span class="form-result-title">BROOKE EXPLAINS</span><span class="form-result-copy" onclick="copyEl('formResultBody')">Copy</span></div>
+      <div class="form-result-body" id="formResultBody"></div>
+    </div>
+  </div>
+</div>
+
+<!-- BRAND BUILDER -->
+<div class="screen" id="brand">
+  <div class="hdr">
+    <div class="hdr-l">
+      <div class="hdr-icon" style="border-color:var(--gold-b)"><svg viewBox="0 0 22 22" fill="none"><path d="M2 11L11 3L20 11" stroke="#F5C842" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9.5V19H18V9.5" stroke="#F5C842" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="8" y="13" width="6" height="6" rx="1" stroke="#F5C842" stroke-width="1.5" fill="none"/></svg></div>
+      <div><div class="hdr-n" style="color:var(--text)">Brook<span style="color:var(--gold)">e</span></div><div class="hdr-st" style="color:var(--gold)">Brand Builder</div></div>
+    </div>
+  </div>
+  <div class="brand-body">
+    <div class="brand-hero">
+      <div class="brand-hero-title">&#11088; Brand Builder</div>
+      <div class="brand-hero-sub">Your bio, Instagram, email signature, and elevator pitch. All in one tap.</div>
+    </div>
+    <div class="section-lbl">About you</div>
+    <div class="brand-field"><div class="brand-label">Your full name</div><input class="brand-input" id="brandName" placeholder="Lizette O'Donnell" type="text" value="Lizette O'Donnell"></div>
+    <div class="brand-field"><div class="brand-label">Years in real estate</div><input class="brand-input" id="brandYears" placeholder="e.g. 12" type="text"></div>
+    <div class="brand-field"><div class="brand-label">Your market area</div><input class="brand-input" id="brandMarket" placeholder="Joshua Tree, Yucca Valley, Hi-Desert, Coachella Valley" type="text" value="Joshua Tree, Yucca Valley, Hi-Desert, Coachella Valley"></div>
+    <div class="brand-field"><div class="brand-label">Your specialty</div><input class="brand-input" id="brandSpec" placeholder="STR investments, first-time buyers, luxury desert homes..." type="text"></div>
+    <div class="brand-field"><div class="brand-label">3 words that describe you as an agent</div><input class="brand-input" id="brandWords" placeholder="local, hustle, sharp" type="text"></div>
+    <div class="brand-field"><div class="brand-label">Anything else to know about you (optional)</div><textarea class="brand-ta" id="brandExtra" placeholder="Former Coldwell Banker agent going independent. Passionate about the Hi-Desert community. Born and raised in the Coachella Valley..."></textarea></div>
+    <button class="brand-gen-btn" id="brandGenBtn" onclick="genBrand()">Build My Brand</button>
+    <div class="brand-out" id="brandBio"><div class="brand-out-hdr"><span class="brand-out-title" style="color:var(--neon)">PROFESSIONAL BIO</span><span class="brand-out-copy" onclick="copyEl('brandBioBody')">Copy</span></div><div class="brand-out-body" id="brandBioBody"></div></div>
+    <div class="brand-out" id="brandIG"><div class="brand-out-hdr"><span class="brand-out-title" style="color:var(--purple)">INSTAGRAM PROFILE BIO</span><span class="brand-out-copy" style="border-color:var(--purple-b);color:var(--purple)" onclick="copyEl('brandIGBody')">Copy</span></div><div class="brand-out-body" id="brandIGBody"></div></div>
+    <div class="brand-out" id="brandSig"><div class="brand-out-hdr"><span class="brand-out-title" style="color:var(--gold)">EMAIL SIGNATURE</span><span class="brand-out-copy" onclick="copyEl('brandSigBody')">Copy</span></div><div class="brand-out-body" id="brandSigBody"></div></div>
+    <div class="brand-out" id="brandPitch"><div class="brand-out-hdr"><span class="brand-out-title" style="color:var(--coral)">30-SECOND ELEVATOR PITCH</span><span class="brand-out-copy" style="border-color:var(--coral-b);color:var(--coral)" onclick="copyEl('brandPitchBody')">Copy</span></div><div class="brand-out-body" id="brandPitchBody"></div></div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV - CUSTOMIZABLE -->
+<div class="bnav" id="bnav" style="display:none">
+  <div class="ni active" id="navSlot0" onclick="navTap(0)" oncontextmenu="openNavPicker(0,event)" ontouchstart="navTouchStart(0,event)" ontouchend="navTouchEnd(event)"></div>
+  <div class="ni" id="navSlot1" onclick="navTap(1)" oncontextmenu="openNavPicker(1,event)" ontouchstart="navTouchStart(1,event)" ontouchend="navTouchEnd(event)"></div>
+  <div class="ni" id="navSlot2" onclick="navTap(2)" oncontextmenu="openNavPicker(2,event)" ontouchstart="navTouchStart(2,event)" ontouchend="navTouchEnd(event)"></div>
+  <div class="ni" id="navSlot3" onclick="navTap(3)" oncontextmenu="openNavPicker(3,event)" ontouchstart="navTouchStart(3,event)" ontouchend="navTouchEnd(event)"></div>
+  <div class="ni" id="ni-more" onclick="toggleMore()"><div class="ni-icon">&#9776;</div><div class="ni-lbl">More</div></div>
+</div>
+
+<!-- NAV PICKER MODAL -->
+<div id="navPickerOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:400" onclick="closeNavPicker()">
+</div>
+<div id="navPicker" style="display:none;position:fixed;bottom:72px;left:0;right:0;z-index:401;background:var(--s2);border-top:.5px solid var(--border);padding:16px 18px 20px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+    <div style="font-size:13px;font-weight:700;color:var(--text)">Choose tab</div>
+    <div style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace">Hold any tab to customize</div>
+  </div>
+  <div id="navPickerGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px"></div>
+</div>
+
+<!-- MORE MENU -->
+<div id="moreMenu" style="display:none;position:fixed;bottom:72px;left:0;right:0;z-index:99;background:var(--s2);border-top:.5px solid var(--border);padding:12px 18px 16px">
+  <div style="font-size:9px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:.08em;margin-bottom:10px">MORE TOOLS</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+    <div onclick="showS('clients');closeMore()" style="background:var(--s3);border:.5px solid var(--border);border-radius:14px;padding:12px;text-align:center;cursor:pointer">
+      <div style="font-size:22px;margin-bottom:4px">&#128101;</div>
+      <div style="font-size:11px;font-weight:600;color:var(--text)">Clients</div>
+    </div>
+    <div onclick="showS('scripts');closeMore()" style="background:var(--s3);border:.5px solid var(--neon-b);border-radius:14px;padding:12px;text-align:center;cursor:pointer">
+      <div style="font-size:22px;margin-bottom:4px">&#128172;</div>
+      <div style="font-size:11px;font-weight:600;color:var(--neon)">Script Me</div>
+    </div>
+    <div onclick="showS('forms');closeMore()" style="background:var(--s3);border:.5px solid var(--purple-b);border-radius:14px;padding:12px;text-align:center;cursor:pointer">
+      <div style="font-size:22px;margin-bottom:4px">&#128196;</div>
+      <div style="font-size:11px;font-weight:600;color:var(--purple)">Forms</div>
+    </div>
+    <div onclick="showS('brand');closeMore()" style="background:var(--s3);border:.5px solid var(--gold-b);border-radius:14px;padding:12px;text-align:center;cursor:pointer">
+      <div style="font-size:22px;margin-bottom:4px">&#11088;</div>
+      <div style="font-size:11px;font-weight:600;color:var(--gold)">Brand</div>
+    </div>
+    <div onclick="showS('scan');closeMore()" style="background:var(--s3);border:.5px solid var(--purple-b);border-radius:14px;padding:12px;text-align:center;cursor:pointer">
+      <div style="font-size:22px;margin-bottom:4px">&#128196;</div>
+      <div style="font-size:11px;font-weight:600;color:var(--purple)">Scan</div>
+    </div>
+  </div>
+</div>
+
+<!-- SCAN FAB -->
+<div style="position:fixed;bottom:80px;right:18px;z-index:60;display:none" id="scanFab">
+  <div style="width:48px;height:48px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;box-shadow:0 0 0 4px rgba(155,89,255,0.2)" onclick="showS('scan')">&#128196;</div>
+</div>
+
+<div class="toast" id="toast"></div>
+<input type="file" id="camIn" accept="image/*" capture="environment" style="display:none" onchange="hCam(event)">
+<input type="file" id="scanIn" accept="image/*" capture="environment" style="display:none" onchange="hScan(event)">
+
+<script>
+var BROOKE_SYSTEM = 'You are Brooke, the ultimate AI real estate partner for Lizette, an independent broker in California Hi-Desert and Coachella Valley (Joshua Tree, Yucca Valley, Palm Springs, Indio). PERSONALITY: Calm, warm, authoritative. Never use dense legal jargon. Never say I am an AI. You are Brooke, her partner. When she is stressed, steady her first then solve the problem. RESPONSE FORMAT: 1) BOTTOM LINE: One sentence answer. 2) STEP-BY-STEP: Numbered steps max 3 sentences each. 3) WATCH OUT: One compliance or legal flag. 4) BROKER TIP: One sentence connecting to a California DRE broker exam concept. KNOWLEDGE: Always prioritize California-specific law. For MLS apply CRMLS Hi-Desert rules. For STR apply San Bernardino County Chapter 84.28. For C.A.R. forms cite specific form name and section. If unsure about hyper-local rules say exactly where to verify. VISION: When she uploads a photo act as visual GPS. For documents scan for missing signatures and required California disclosures. HIDDEN MISSION: After every task append a Broker Tip connecting her daily work to a DRE broker exam concept like fiduciary duty, trust funds, dual agency, material facts, or clear cooperation. Frame it as professional excellence not studying.';
+var msgs = [], imgB64 = null, imgMime = 'image/jpeg';
+var sImgB64 = null, sImgMime = 'image/jpeg';
+var isRec = false, recog = null, tRecog = null, isTRec = false, difyId = '';
+var lstType = 'Residential', lstStr = 'yes';
+var emailType = 'Buyer follow-up', emailTone = 'Warm';
+
+if ('serviceWorker' in navigator) { window.addEventListener('load', function() { navigator.serviceWorker.register('/sw.js'); }); }
+
+/* ---- CLIENTS ---- */
+function getClients() { try { return JSON.parse(localStorage.getItem('brooke_clients') || '[]'); } catch(e) { return []; } }
+function saveClients(c) { try { localStorage.setItem('brooke_clients', JSON.stringify(c)); } catch(e) {} }
+function openAddClient() { document.getElementById('clientModal').classList.add('show'); }
+function closeAddClient() {
+  document.getElementById('clientModal').classList.remove('show');
+  document.getElementById('cName').value = '';
+  document.getElementById('cBudget').value = '';
+  document.getElementById('cArea').value = '';
+  document.getElementById('cContact').value = '';
+  document.getElementById('cNotes').value = '';
+}
+function saveClient() {
+  var name = document.getElementById('cName').value.trim();
+  if (!name) { toast('Please enter a name'); return; }
+  var clients = getClients();
+  clients.unshift({
+    id: Date.now(),
+    name: name,
+    type: document.getElementById('cType').value,
+    budget: document.getElementById('cBudget').value,
+    area: document.getElementById('cArea').value,
+    contact: document.getElementById('cContact').value,
+    notes: document.getElementById('cNotes').value,
+    added: new Date().toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'})
+  });
+  saveClients(clients);
+  closeAddClient();
+  renderClients();
+  populateEmailClients();
+  toast(name + ' saved');
+}
+function deleteClient(id) {
+  var clients = getClients().filter(function(c) { return c.id !== id; });
+  saveClients(clients);
+  renderClients();
+  populateEmailClients();
+  toast('Client removed');
+}
+function askAboutClient(id) {
+  var clients = getClients();
+  var c = null;
+  for (var i = 0; i < clients.length; i++) { if (clients[i].id === id) { c = clients[i]; break; } }
+  if (!c) return;
+  var q = 'I have a client named ' + c.name + '. They are a ' + c.type + ' with a budget of ' + (c.budget || 'unspecified') + ', looking in ' + (c.area || 'Hi-Desert') + '. Notes: ' + (c.notes || 'none') + '. What should I focus on for them today and what properties or strategies should I consider?';
+  showS('chat');
+  document.getElementById('cin').value = q;
+  sendMsg();
+}
+function renderClients() {
+  var clients = getClients();
+  var el = document.getElementById('clientsList');
+  if (clients.length === 0) {
+    el.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;line-height:2">No clients yet.<br>Add your first buyer or seller above.</div>';
+    return;
+  }
+  var html = '';
+  for (var i = 0; i < clients.length; i++) {
+    var c = clients[i];
+    var initials = c.name.split(' ').map(function(w) { return w[0]; }).join('').substring(0,2).toUpperCase();
+    html += '<div class="client-card" style="margin-bottom:10px">';
+    html += '<div class="cc-top">';
+    html += '<div class="cc-avatar">' + initials + '</div>';
+    html += '<div class="cc-info"><div class="cc-name">' + esc(c.name) + '</div><div class="cc-role">' + c.type + ' &middot; Added ' + c.added + '</div></div>';
+    html += '</div>';
+    html += '<div class="cc-details">';
+    if (c.budget) html += '<div class="cc-detail"><span class="cc-detail-lbl">Budget</span><span class="cc-detail-val">' + esc(c.budget) + '</span></div>';
+    if (c.area) html += '<div class="cc-detail"><span class="cc-detail-lbl">Looking in</span><span class="cc-detail-val">' + esc(c.area) + '</span></div>';
+    if (c.contact) html += '<div class="cc-detail"><span class="cc-detail-lbl">Contact</span><span class="cc-detail-val">' + esc(c.contact) + '</span></div>';
+    if (c.notes) html += '<div class="cc-detail"><span class="cc-detail-lbl">Notes</span><span class="cc-detail-val" style="color:var(--muted)">' + esc(c.notes.substring(0,120)) + (c.notes.length > 120 ? '...' : '') + '</span></div>';
+    html += '<div style="display:flex;gap:7px;margin-top:8px">';
+    html += '<div class="cc-action" onclick="askAboutClient(' + c.id + ')">Ask Brooke</div>';
+    html += '<div class="cc-action danger" onclick="deleteClient(' + c.id + ')">Remove</div>';
+    html += '</div>';
+    html += '</div></div>';
+  }
+  el.innerHTML = html;
+}
+function populateEmailClients() {
+  var sel = document.getElementById('emailClientSel');
+  var clients = getClients();
+  sel.innerHTML = '<option value="">No specific client</option>';
+  for (var i = 0; i < clients.length; i++) {
+    sel.innerHTML += '<option value="' + clients[i].id + '">' + clients[i].name + ' (' + clients[i].type + ')</option>';
+  }
+}
+
+/* ---- MORNING BRIEFING ---- */
+function getTodayKey() {
+  var now = new Date();
+  return 'brooke_tasks_' + now.getFullYear() + '_' + now.getMonth() + '_' + now.getDate();
+}
+
+function getDefaultTasks() {
+  var clients = getClients();
+  var clientTask = clients.length > 0 ? 'Review ' + clients[0].name + ' - follow up needed' : 'Add your first client in the Clients tab';
+  return [
+    { id: 1, text: 'Check new MLS listings in Hi-Desert', tag: 'MLS', tagColor: 'var(--neon)', done: false },
+    { id: 2, text: clientTask, tag: 'Client', tagColor: 'var(--purple)', done: false },
+    { id: 3, text: 'Review any active listing deadlines today', tag: 'Deadline', tagColor: 'var(--gold)', done: false },
+    { id: 4, text: 'Send any pending client follow-ups', tag: 'Email', tagColor: 'var(--coral)', done: false }
+  ];
+}
+
+function loadTasks() {
+  var key = getTodayKey();
+  try {
+    var saved = JSON.parse(localStorage.getItem(key) || 'null');
+    if (saved && saved.length > 0) return saved;
+  } catch(e) {}
+  var defaults = getDefaultTasks();
+  saveTasks(defaults);
+  return defaults;
+}
+
+function saveTasks(tasks) {
+  try { localStorage.setItem(getTodayKey(), JSON.stringify(tasks)); } catch(e) {}
+}
+
+function toggleTask(id) {
+  var tasks = loadTasks();
+  for (var i = 0; i < tasks.length; i++) {
+    if (tasks[i].id === id) { tasks[i].done = !tasks[i].done; break; }
+  }
+  saveTasks(tasks);
+  renderBriefing();
+}
+
+function addTask() {
+  var inp = document.getElementById('briefAddInput');
+  var text = inp.value.trim();
+  if (!text) return;
+  var tasks = loadTasks();
+  tasks.push({ id: Date.now(), text: text, tag: 'Custom', tagColor: 'var(--muted)', done: false });
+  saveTasks(tasks);
+  inp.value = '';
+  renderBriefing();
+  toast('Task added');
+}
+
+function briefAddKey(e) {
+  if (e.key === 'Enter') addTask();
+}
+
+function toggleBriefCollapse() {
+  var tasks = document.getElementById('briefTasks');
+  var toggle = document.getElementById('briefToggle');
+  if (tasks.classList.contains('collapsed')) {
+    tasks.classList.remove('collapsed');
+    toggle.classList.add('open');
+  } else {
+    tasks.classList.add('collapsed');
+    toggle.classList.remove('open');
+  }
+}
+
+function renderBriefing() {
+  var h = new Date().getHours();
+  var g = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var now = new Date();
+  var dateStr = days[now.getDay()] + ', ' + months[now.getMonth()] + ' ' + now.getDate();
+  var tasks = loadTasks();
+  var done = tasks.filter(function(t) { return t.done; }).length;
+  var total = tasks.length;
+
+  var tasksHtml = '';
+  for (var i = 0; i < tasks.length; i++) {
+    var t = tasks[i];
+    tasksHtml += '<div class="brief-task' + (t.done ? ' done' : '') + '" onclick="toggleTask(' + t.id + ')">' +
+      '<div class="brief-check"><svg class="brief-check-inner" viewBox="0 0 10 10" fill="none"><path d="M1.5 5L4 7.5L8.5 2.5" stroke="#000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>' +
+      '<div class="brief-task-content">' +
+        '<div class="brief-task-text">' + esc(t.text) + '</div>' +
+        '<span class="brief-task-tag" style="background:' + t.tagColor + '20;color:' + t.tagColor + '">' + t.tag + '</span>' +
+      '</div>' +
+    '</div>';
+  }
+
+  var card = document.getElementById('briefingCard');
+  card.innerHTML = '<div class="brief-wrap"><div class="brief-card">' +
+    '<div class="brief-header" onclick="toggleBriefCollapse()">' +
+      '<div class="brief-header-l">' +
+        '<div class="brief-greeting">' + g + ', <span>Lizette</span></div>' +
+        '<div class="brief-date">' + dateStr + ' &middot; Hi-Desert</div>' +
+      '</div>' +
+      '<div class="brief-meta">' +
+        '<div class="brief-progress">' + done + ' / ' + total + ' done</div>' +
+        '<div class="brief-toggle open" id="briefToggle">&#8964;</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="brief-tasks" id="briefTasks">' +
+      tasksHtml +
+      '<div class="brief-add-row">' +
+        '<input class="brief-add-input" id="briefAddInput" placeholder="Add a task for today..." onkeydown="briefAddKey(event)">' +
+        '<button class="brief-add-btn" onclick="addTask()">Add</button>' +
+      '</div>' +
+    '</div>' +
+  '</div></div>';
+}
+
+/* ---- HISTORY ---- */
+function getHists() { try { return JSON.parse(localStorage.getItem('brooke_h') || '[]'); } catch(e) { return []; } }
+function saveHist() {
+  if (msgs.length < 2) return;
+  var hs = getHists();
+  var first = null;
+  for (var i = 0; i < msgs.length; i++) { if (msgs[i].role === 'user') { first = msgs[i]; break; } }
+  var preview = first ? String(first.content).substring(0,120) : 'Conversation';
+  hs.unshift({ id:Date.now(), date:new Date().toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}), msgs:msgs.slice(), preview:preview, count:msgs.length });
+  try { localStorage.setItem('brooke_h', JSON.stringify(hs.slice(0,30))); } catch(e) {}
+}
+function saveCurrent() { try { localStorage.setItem('brooke_cur', JSON.stringify({msgs:msgs, difyId:difyId})); } catch(e) {} }
+function loadLast() {
+  try {
+    var s = JSON.parse(localStorage.getItem('brooke_cur') || 'null');
+    if (s && s.msgs && s.msgs.length > 0) { msgs = s.msgs; difyId = s.difyId || ''; renderMsgs(); return true; }
+  } catch(e) {}
+  return false;
+}
+function showHist() {
+  saveHist();
+  var hs = getHists();
+  var list = document.getElementById('histList');
+  if (hs.length === 0) { list.innerHTML = '<div class="hist-empty">No saved conversations yet.<br><br>Your history appears here automatically.</div>'; }
+  else {
+    var html = '';
+    for (var i = 0; i < hs.length; i++) { var h = hs[i]; html += '<div class="hi" onclick="loadSess(' + h.id + ')"><div class="hi-d">' + h.date + '</div><div class="hi-p">' + esc(h.preview) + '</div><div class="hi-c">' + h.count + ' messages</div></div>'; }
+    list.innerHTML = html;
+  }
+  document.getElementById('histPanel').classList.add('show');
+}
+function hideHist() { document.getElementById('histPanel').classList.remove('show'); }
+function loadSess(id) {
+  var hs = getHists();
+  for (var i = 0; i < hs.length; i++) { if (hs[i].id === id) { msgs = hs[i].msgs.slice(); difyId = ''; renderMsgs(); hideHist(); toast('Conversation loaded'); return; } }
+}
+function esc(t) { return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* ---- BOOT ---- */
+setTimeout(function() {
+  document.getElementById('splash').classList.remove('active');
+  document.getElementById('chat').classList.add('active');
+  document.getElementById('bnav').style.display = 'flex';
+  document.getElementById('scanFab').style.display = 'block';
+  loadNavSlots();
+  renderNav();
+  renderBriefing();
+  renderClients();
+  populateEmailClients();
+  if (!loadLast()) welcome();
+}, 1800);
+
+function welcome() {
+  addEl('brooke', '**Brooke is ready.** Ask me anything about California real estate, use the tabs below to draft emails, generate listings, scan documents, or save your clients.');
+}
+function newChat() { saveHist(); msgs = []; difyId = ''; try { localStorage.removeItem('brooke_cur'); } catch(e) {} document.getElementById('chatMsgs').innerHTML = ''; welcome(); toast('New conversation'); }
+function showS(n) {
+  var names = ['chat','clients','talk','email','listing','scan','scripts','forms','brand'];
+  for (var i = 0; i < names.length; i++) {
+    document.getElementById(names[i]).classList.remove('active');
+    var ni = document.getElementById('ni-' + names[i]);
+    if (ni) ni.classList.remove('active');
+  }
+  document.getElementById(n).classList.add('active');
+  var activeNi = document.getElementById('ni-' + n);
+  if (activeNi) activeNi.classList.add('active');
+  document.getElementById('scanFab').style.display = n === 'scan' ? 'none' : 'block';
+  closeMore();
+}
+function toast(m) { var t = document.getElementById('toast'); t.textContent = m; t.classList.add('show'); setTimeout(function() { t.classList.remove('show'); }, 2200); }
+function aR(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight,120) + 'px'; }
+function oK(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); } }
+function quickAsk(q) { document.getElementById('cin').value = q; sendMsg(); }
+
+function hCam(e) {
+  var f = e.target.files[0]; if (!f) return;
+  var r = new FileReader();
+  r.onload = function(ev) { imgB64 = ev.target.result.split(',')[1]; imgMime = f.type; document.getElementById('ipr').src = ev.target.result; document.getElementById('ipw').classList.add('show'); };
+  r.readAsDataURL(f); e.target.value = '';
+}
+function rmImg() { imgB64 = null; document.getElementById('ipw').classList.remove('show'); document.getElementById('ipr').src = ''; }
+
+
+
+/* ---- SEND CHAT ---- */
+function sendMsg() {
+  var input = document.getElementById('cin');
+  var text = input.value.trim();
+  if (!text && !imgB64) return;
+  addEl('user', text || 'Photo sent for analysis');
+  var ib = imgB64, im = imgMime;
+  input.value = ''; input.style.height = 'auto'; rmImg();
+  msgs.push({role:'user', content:text||'Analyze this image.'});
+  var typ = addTyping();
+  document.getElementById('cst').textContent = 'Thinking...';
+  var history = [];
+  for (var h = 0; h < msgs.length; h++) {
+    history.push({role: msgs[h].role === 'user' ? 'user' : 'assistant', content: String(msgs[h].content)});
+  }
+  var reqBody = {prompt: text||'Analyze this image and help me.', systemPrompt: BROOKE_SYSTEM, history: history, stream: true};
+  if (ib) { reqBody.imageData = ib; reqBody.imageMime = im; }
+  fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(reqBody)})
+  .then(function(res) {
+    typ.remove();
+    if (!res.ok) { addEl('brooke','Connection issue - please try again.'); document.getElementById('cst').textContent='Online - Hi-Desert'; return; }
+    var bDiv = addEl('brooke',''); var bub = bDiv.querySelector('.mbub');
+    var full='',buf=''; var reader=res.body.getReader(),dec=new TextDecoder();
+    function pump() {
+      return reader.read().then(function(chunk) {
+        if (chunk.done) {
+          if (!full) bub.innerHTML = 'Connection issue - please try again.';
+          msgs.push({role:'assistant',content:full}); saveCurrent();
+          document.getElementById('cst').textContent = 'Online - Hi-Desert'; return;
+        }
+        buf += dec.decode(chunk.value,{stream:true});
+        var lines = buf.split('\n'); buf = lines.pop();
+        for (var i = 0; i < lines.length; i++) {
+          if (lines[i].trim()) {
+            try { var j=JSON.parse(lines[i]); if(j.text){full+=j.text;bub.innerHTML=fmt(full);scrl();} } catch(er) {}
+          }
+        }
+        return pump();
+      });
+    }
+    return pump();
+  }).catch(function(){typ.remove();addEl('brooke','Connection issue - check internet and try again.');document.getElementById('cst').textContent='Online - Hi-Desert';});
+}
+
+function renderMsgs() { var c=document.getElementById('chatMsgs');c.innerHTML='';for(var i=0;i<msgs.length;i++){var t=typeof msgs[i].content==='string'?msgs[i].content:'Photo';addEl(msgs[i].role==='user'?'user':'brooke',t);} }
+function addEl(role,text) {
+  var c=document.getElementById('chatMsgs');
+  var d=document.createElement('div');d.className='msg '+role;
+  var av=document.createElement('div');av.className='mav';
+  if(role==='brooke'){av.innerHTML='<svg viewBox="0 0 22 22" fill="none"><path d="M2 11L11 3L20 11" stroke="#39FF6A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9.5V19H18V9.5" stroke="#39FF6A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="8" y="13" width="6" height="6" rx="1" stroke="#39FF6A" stroke-width="1.5" fill="none"/></svg>';}
+  else{av.textContent='L';}
+  var b=document.createElement('div');b.className='mbub';b.innerHTML=fmt(text);
+  d.appendChild(av);d.appendChild(b);c.appendChild(d);scrl();return d;
+}
+function addTyping() { var c=document.getElementById('chatMsgs');var d=document.createElement('div');d.className='msg brooke';d.innerHTML='<div class="mav"><svg viewBox="0 0 22 22" fill="none"><path d="M2 11L11 3L20 11" stroke="#39FF6A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9.5V19H18V9.5" stroke="#39FF6A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="typing-ind"><div class="td"></div><div class="td"></div><div class="td"></div></div>';c.appendChild(d);scrl();return d; }
+function scrl(){var c=document.getElementById('chatMsgs');c.scrollTop=c.scrollHeight;}
+function fmt(t){if(!t)return '';return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\*(.*?)\*/g,'<em>$1</em>').replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');}
+
+/* ---- MIC ---- */
+function togMic(){
+  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){toast('Use Safari for voice');return;}
+  if(isRec){if(recog)recog.stop();return;}
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;recog=new SR();recog.lang='en-US';recog.interimResults=true;
+  var btn=document.getElementById('mbi');
+  recog.onstart=function(){isRec=true;btn.classList.add('rec');btn.textContent='Stop';};
+  recog.onresult=function(e){var t='';for(var i=0;i<e.results.length;i++)t+=e.results[i][0].transcript;document.getElementById('cin').value=t;aR(document.getElementById('cin'));};
+  recog.onend=function(){isRec=false;btn.classList.remove('rec');btn.innerHTML='&#127897;';};
+  recog.onerror=function(){isRec=false;btn.classList.remove('rec');btn.innerHTML='&#127897;';};
+  recog.start();
+}
+
+/* ---- VOICE SCREEN ---- */
+function startV(e){
+  if(e)e.preventDefault();if(isTRec)return;
+  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){document.getElementById('tTx').textContent='Voice needs Safari on iOS';return;}
+  isTRec=true;document.getElementById('micM').classList.add('rec');document.getElementById('wvf').classList.add('active');document.getElementById('tTx').textContent='Listening...';
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;tRecog=new SR();tRecog.lang='en-US';tRecog.interimResults=true;
+  tRecog.onresult=function(e){var t='';for(var i=0;i<e.results.length;i++)t+=e.results[i][0].transcript;document.getElementById('tTx').textContent=t;};
+  tRecog.start();
+}
+function stopV(e) {
+  if (e) e.preventDefault();
+  if (!isTRec) return;
+  isTRec = false;
+  document.getElementById('micM').classList.remove('rec');
+  document.getElementById('wvf').classList.remove('active');
+  var tx = document.getElementById('tTx').textContent;
+  if (!tx || tx === 'Listening...' || tx === 'Hold the mic and speak') {
+    document.getElementById('tTx').textContent = 'Hold the mic and speak';
+    if (tRecog) tRecog.stop(); return;
+  }
+  if (tRecog) tRecog.stop();
+  document.getElementById('tTx').textContent = 'Thinking...';
+  var respEl = document.getElementById('tResp'); respEl.classList.remove('show'); respEl.innerHTML = '';
+  fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:tx,systemPrompt:BROOKE_SYSTEM,stream:true})})
+  .then(function(res) {
+    var full='',buf=''; respEl.classList.add('show');
+    document.getElementById('tTx').textContent = '"' + tx + '"';
+    var reader=res.body.getReader(),dec=new TextDecoder();
+    function pump() {
+      return reader.read().then(function(chunk) {
+        if (chunk.done) { if(full) spk(full); return; }
+        buf+=dec.decode(chunk.value,{stream:true}); var lines=buf.split('\n'); buf=lines.pop();
+        for(var i=0;i<lines.length;i++){if(lines[i].trim()){try{var j=JSON.parse(lines[i]);if(j.text){full+=j.text;respEl.innerHTML=fmt(full);}}catch(er){}}}
+        return pump();
+      });
+    }
+    return pump();
+  }).catch(function(){document.getElementById('tTx').textContent='Error - try again';});
+}
+
+function spk(text){
+  if(!window.speechSynthesis)return;
+  var clean=text.replace(/<[^>]*>/g,'').replace(/\*\*/g,'').replace(/\*/g,'');
+  window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(clean);u.rate=0.93;u.pitch=1.0;u.volume=1;
+  var vs=window.speechSynthesis.getVoices();for(var i=0;i<vs.length;i++){if(vs[i].name.indexOf('Samantha')>-1||vs[i].name.indexOf('Karen')>-1){u.voice=vs[i];break;}}
+  window.speechSynthesis.speak(u);
+}
+
+/* ---- EMAIL DRAFTER ---- */
+function selEtype(el){var all=document.querySelectorAll('.etype');for(var i=0;i<all.length;i++)all[i].classList.remove('active');el.classList.add('active');emailType=el.textContent.trim();}
+function selEtone(el){var all=document.querySelectorAll('.etone');for(var i=0;i<all.length;i++)all[i].classList.remove('active');el.classList.add('active');emailTone=el.textContent.trim();}
+function genEmail(){
+  var details=document.getElementById('emailDetails').value.trim();
+  var clientId=document.getElementById('emailClientSel').value;
+  var clientContext='';
+  if(clientId){var clients=getClients();for(var i=0;i<clients.length;i++){if(String(clients[i].id)===clientId){var c=clients[i];clientContext='Client: '+c.name+', '+c.type+', budget '+c.budget+', looking in '+c.area+'. Notes: '+c.notes+'.';break;}}}
+  if(!details&&!clientContext){toast('Add some details first');return;}
+  var prompt='Write a real estate email for California Hi-Desert independent broker Lizette. Email type: '+emailType+'. Tone: '+emailTone+'. '+clientContext+' Details: '+details+'. Format: SUBJECT: [subject line] then blank line then full email body. Sign off: Lizette, then next line: Independent Broker | Hi-Desert & Coachella Valley. Keep it concise.';
+  var btn=document.getElementById('emailGenBtn');
+  btn.disabled=true;btn.textContent='Writing...';
+  var out=document.getElementById('emailOutput');
+  out.classList.remove('show');
+  document.getElementById('emailSubjLine').innerHTML='';
+  document.getElementById('emailOutBody').innerHTML='';
+
+  fetch('/api/generate',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      prompt:prompt,
+      systemPrompt:'You are a professional real estate email writer for a California Hi-Desert broker. Be warm, concise, and professional.'
+    })
+  }).then(function(r){
+    if(!r.ok){throw new Error('Server error '+r.status);}
+    return r.json();
+  }).then(function(d){
+    if(d.text){parseEmail(d.text);}
+    else{toast('No content returned - try again');}
+    btn.disabled=false;btn.textContent='Draft Email';
+  }).catch(function(err){
+    btn.disabled=false;btn.textContent='Draft Email';
+    toast('Error: '+err.message+' - try again');
+  });
+}
+function parseEmail(text){
+  var subjMatch=text.match(/SUBJECT:\s*(.+)/i);
+  var body=text;
+  if(subjMatch){
+    document.getElementById('emailSubjLine').innerHTML='<strong>Subject:</strong> '+esc(subjMatch[1].trim());
+    body=text.replace(/SUBJECT:\s*.+\n?/i,'').trim();
+  }
+  document.getElementById('emailOutBody').innerHTML=fmt(body);
+  document.getElementById('emailOutput').classList.add('show');
+  document.querySelector('.email-body').scrollTop=99999;
+  toast('Email drafted');
+}
+function copyEmailOut(){
+  var subj=document.getElementById('emailSubjLine').innerText||'';
+  var body=document.getElementById('emailOutBody').innerText||'';
+  var full=(subj?subj+'\n\n':'')+body;
+  if(navigator.clipboard){navigator.clipboard.writeText(full).then(function(){toast('Copied to clipboard');});}
+  else{var ta=document.createElement('textarea');ta.value=full;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('Copied');}
+}
+
+/* ---- LISTING GENERATOR ---- */
+function selType(el){var all=document.querySelectorAll('.lst-types .lst-type');for(var i=0;i<all.length;i++){if(all[i].parentNode===el.parentNode)all[i].classList.remove('active');}el.classList.add('active');lstType=el.textContent.trim();}
+function selStr(val){lstStr=val;document.getElementById('strYes').classList.remove('active');document.getElementById('strNo').classList.remove('active');document.getElementById('strMaybe').classList.remove('active');document.getElementById('str'+val.charAt(0).toUpperCase()+val.slice(1)).classList.add('active');}
+function genListing(){
+  var beds=document.getElementById('lBeds').value;
+  var baths=document.getElementById('lBaths').value;
+  var sqft=document.getElementById('lSqft').value;
+  var lot=document.getElementById('lLot').value;
+  var price=document.getElementById('lPrice').value;
+  var city=document.getElementById('lCity').value;
+  var features=document.getElementById('lFeatures').value;
+  var notes=document.getElementById('lNotes').value;
+  if(!city&&!beds&&!features){toast('Fill in at least a few details');return;}
+  var strNote=lstStr==='yes'?'Highlight STR/Airbnb potential.':lstStr==='maybe'?'Mention possible STR with permits.':'No STR mention.';
+  var prompt='Write listing copy for a California Hi-Desert real estate property. Return THREE sections with these exact labels on their own line:\n[MLS]\n[ZILLOW]\n[INSTAGRAM]\n\nProperty: '+lstType+' in '+city+' CA. Beds:'+(beds||'?')+' Baths:'+(baths||'?')+' Sqft:'+(sqft||'?')+' Lot:'+(lot||'?')+' Price:'+(price||'?')+' Features:'+(features||'none')+(notes?' Notes:'+notes:'')+'. '+strNote+'\n\nMLS: max 400 chars, factual, no hype words.\nZILLOW: 100 words, warm and inviting.\nINSTAGRAM: 2 punchy sentences + hashtags #JoshuaTree #HiDesert #DesertLiving #CaliforniaRealEstate';
+
+  var btn=document.getElementById('lstGenBtn');
+  btn.disabled=true;btn.textContent='Generating...';
+  document.getElementById('outMLS').classList.remove('show');
+  document.getElementById('outZillow').classList.remove('show');
+  document.getElementById('outIG').classList.remove('show');
+  document.getElementById('mlsText').innerHTML='';
+  document.getElementById('zillowText').innerHTML='';
+  document.getElementById('igText').innerHTML='';
+
+  fetch('/api/generate',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      prompt:prompt,
+      systemPrompt:'You are a California real estate copywriter specializing in Hi-Desert properties. Be concise and direct.'
+    })
+  }).then(function(r){
+    if(!r.ok){throw new Error('Server error '+r.status);}
+    return r.json();
+  }).then(function(d){
+    if(d.text){parseListing(d.text);}
+    else{toast('No content returned - try again');}
+    btn.disabled=false;btn.textContent='Generate Listing Copy';
+  }).catch(function(err){
+    btn.disabled=false;btn.textContent='Generate Listing Copy';
+    toast('Error: '+err.message+' - try again');
+  });
+}
+
+function updateListingPreview(text){
+  var mlsM=text.match(/\[MLS\]([\s\S]*?)(?=\[ZILLOW\]|\[INSTAGRAM\]|$)/i);
+  var zilM=text.match(/\[ZILLOW\]([\s\S]*?)(?=\[INSTAGRAM\]|$)/i);
+  var igM=text.match(/\[INSTAGRAM\]([\s\S]*?)$/i);
+  if(mlsM&&mlsM[1].trim()) document.getElementById('mlsText').innerHTML=fmt(mlsM[1].trim());
+  if(zilM&&zilM[1].trim()) document.getElementById('zillowText').innerHTML=fmt(zilM[1].trim());
+  if(igM&&igM[1].trim()) document.getElementById('igText').innerHTML=fmt(igM[1].trim());
+}
+
+function parseListing(text){
+  var clean=text.replace(/\[MLS( PUBLIC REMARKS)?\]/gi,'').replace(/\[ZILLOW( DESCRIPTION)?\]/gi,'|||ZILLOW|||').replace(/\[INSTAGRAM( CAPTION)?\]/gi,'|||INSTAGRAM|||');
+  var parts=clean.split('|||');
+  var mlsTxt='',zilTxt='',igTxt='';
+  for(var i=0;i<parts.length;i++){
+    if(parts[i]==='ZILLOW'){zilTxt=(parts[i+1]||'').trim();i++;}
+    else if(parts[i]==='INSTAGRAM'){igTxt=(parts[i+1]||'').trim();i++;}
+    else if(parts[i].trim()&&!mlsTxt){mlsTxt=parts[i].trim();}
+  }
+  if(mlsTxt){document.getElementById('mlsText').innerHTML=fmt(mlsTxt);document.getElementById('outMLS').classList.add('show');}
+  if(zilTxt){document.getElementById('zillowText').innerHTML=fmt(zilTxt);document.getElementById('outZillow').classList.add('show');}
+  if(igTxt){document.getElementById('igText').innerHTML=fmt(igTxt);document.getElementById('outIG').classList.add('show');}
+  if(!mlsTxt&&!zilTxt&&!igTxt){document.getElementById('mlsText').innerHTML=fmt(text);document.getElementById('outMLS').classList.add('show');}
+  document.querySelector('.lst-body').scrollTop=99999;
+  toast('Listing copy ready');
+}
+function copyOut(id){var el=document.getElementById(id);var text=el.innerText||el.textContent;if(navigator.clipboard){navigator.clipboard.writeText(text).then(function(){toast('Copied');});}else{var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('Copied');}}
+
+/* ---- SCAN ---- */
+function hScan(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(ev){sImgB64=ev.target.result.split(',')[1];sImgMime=f.type;document.getElementById('simg').src=ev.target.result;document.getElementById('sfn').textContent=f.name;document.getElementById('sprev').classList.add('show');document.getElementById('sres').classList.remove('show');};r.readAsDataURL(f);e.target.value='';}
+function clrScan(){sImgB64=null;document.getElementById('sprev').classList.remove('show');document.getElementById('sres').classList.remove('show');document.getElementById('simg').src='';}
+function qScan(p){document.getElementById('spi').value=p;if(!sImgB64){document.getElementById('scanIn').click();toast('Upload a photo first');}else doScan();}
+function doScan(){
+  if(!sImgB64){toast('Please upload a photo first');document.getElementById('scanIn').click();return;}
+  var p=document.getElementById('spi').value||'Analyze this document and flag any issues. Check for missing signatures, required California disclosures, and compliance issues.';
+  var btn=document.getElementById('sgoBtn');btn.disabled=true;btn.textContent='Analyzing...';
+  var resEl=document.getElementById('sres'),resT=document.getElementById('sresT');
+  resEl.classList.remove('show');resT.innerHTML='';
+  var reqBody={prompt:p,systemPrompt:BROOKE_SYSTEM,imageData:sImgB64,imageMime:sImgMime,stream:true};
+  fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(reqBody)})
+  .then(function(res){
+    var full='',buf='';resEl.classList.add('show');
+    var reader=res.body.getReader(),dec=new TextDecoder();
+    function pump(){return reader.read().then(function(chunk){
+      if(chunk.done){if(!full)resT.textContent='Error analyzing. Please try again.';btn.disabled=false;btn.textContent='Analyze';return;}
+      buf+=dec.decode(chunk.value,{stream:true});var lines=buf.split('\n');buf=lines.pop();
+      for(var i=0;i<lines.length;i++){if(lines[i].trim()){try{var j=JSON.parse(lines[i]);if(j.text){full+=j.text;resT.innerHTML=fmt(full);document.querySelector('.scan-body').scrollTop=99999;}}catch(er){}}}
+      return pump();
+    });}
+    return pump();
+  }).catch(function(){resT.textContent='Connection error. Please try again.';resEl.classList.add('show');btn.disabled=false;btn.textContent='Analyze';});
+}
+
+/* ---- MORE MENU ---- */
+function toggleMore(){
+  var m=document.getElementById('moreMenu');
+  var ni=document.getElementById('ni-more');
+  if(m.style.display==='none'){m.style.display='block';ni.classList.add('active');}
+  else{m.style.display='none';ni.classList.remove('active');}
+}
+function closeMore(){
+  document.getElementById('moreMenu').style.display='none';
+  document.getElementById('ni-more').classList.remove('active');
+}
+
+/* ---- UPDATED showS to handle new screens ---- */
+var allScreens=['chat','clients','talk','email','listing','scan','scripts','forms','brand'];
+
+/* ---- SCRIPT ME ---- */
+function toggleScriptCat(hdr){
+  var items=hdr.nextElementSibling;
+  var arr=hdr.querySelector('.script-cat-arr');
+  if(items.style.display==='block'){items.style.display='none';arr.classList.remove('open');}
+  else{items.style.display='block';arr.classList.add('open');}
+}
+
+function getScript(situation){
+  var prompt='You are a California real estate coach helping an independent Hi-Desert broker named Lizette. Give her a practical script with exact words to say for this situation: '+situation+' Format your response as: 1) Brief context/mindset (2 sentences) 2) What to SAY (exact words, in quotes) 3) What to do AFTER. Keep it concise and actionable.';
+  var btn=document.getElementById('scriptCustomBtn');
+  var result=document.getElementById('scriptResult');
+  var body=document.getElementById('scriptResultBody');
+  result.classList.remove('show');
+  body.innerHTML='<span style="color:var(--muted);font-size:12px">Writing your script...</span>';
+  result.classList.add('show');
+  document.querySelector('.scripts-body').scrollTop=99999;
+  fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:prompt,systemPrompt:'You are an expert California real estate coach. Give practical, word-for-word scripts. Be direct and confident.'})})
+  .then(function(r){return r.json();}).then(function(d){if(d.text){body.innerHTML=fmt(d.text);}else{body.innerHTML='Try again.';} document.querySelector('.scripts-body').scrollTop=99999;})
+  .catch(function(){body.innerHTML='Connection error - try again.';});
+}
+
+function getCustomScript(){
+  var ta=document.getElementById('scriptCustomTa');
+  var situation=ta.value.trim();
+  if(!situation){toast('Describe your situation first');return;}
+  var btn=document.getElementById('scriptCustomBtn');
+  btn.disabled=true;btn.textContent='Writing...';
+  var result=document.getElementById('scriptResult');
+  var body=document.getElementById('scriptResultBody');
+  result.classList.remove('show');
+  body.innerHTML='';
+  getScript(situation);
+  setTimeout(function(){btn.disabled=false;btn.textContent='Get My Script';},3000);
+}
+
+/* ---- FORM HELPER ---- */
+function explainForm(formName, fullName, question){
+  var btn=document.getElementById('formAskBtn');
+  var result=document.getElementById('formResult');
+  var body=document.getElementById('formResultBody');
+  result.classList.remove('show');
+  body.innerHTML='<span style="color:var(--muted);font-size:12px">Brooke is reading the form...</span>';
+  result.classList.add('show');
+  document.querySelector('.forms-body').scrollTop=99999;
+  fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:question,systemPrompt:'You are a California real estate forms expert helping an independent broker in the Hi-Desert. Explain forms in plain English. Use numbered steps and bold key terms. Reference 2026 C.A.R. standards.'})})
+  .then(function(r){return r.json();}).then(function(d){if(d.text){body.innerHTML=fmt(d.text);}else{body.innerHTML='Try again.';} document.querySelector('.forms-body').scrollTop=99999;})
+  .catch(function(){body.innerHTML='Connection error - try again.';});
+}
+
+function askFormQuestion(){
+  var q=document.getElementById('formQuestion').value.trim();
+  if(!q){toast('Type your question first');return;}
+  var btn=document.getElementById('formAskBtn');
+  btn.disabled=true;btn.textContent='Asking...';
+  explainForm('Custom',q,q+' Answer in context of California real estate 2026 C.A.R. forms and Hi-Desert market.');
+  setTimeout(function(){btn.disabled=false;btn.textContent='Ask Brooke';},3000);
+}
+
+/* ---- BRAND BUILDER ---- */
+function genBrand(){
+  var name=document.getElementById('brandName').value.trim();
+  var years=document.getElementById('brandYears').value.trim();
+  var market=document.getElementById('brandMarket').value.trim();
+  var spec=document.getElementById('brandSpec').value.trim();
+  var words=document.getElementById('brandWords').value.trim();
+  var extra=document.getElementById('brandExtra').value.trim();
+  if(!name){toast('Add your name first');return;}
+  var btn=document.getElementById('brandGenBtn');
+  btn.disabled=true;btn.textContent='Building...';
+  document.getElementById('brandBio').classList.remove('show');
+  document.getElementById('brandIG').classList.remove('show');
+  document.getElementById('brandSig').classList.remove('show');
+  document.getElementById('brandPitch').classList.remove('show');
+  var prompt='Create professional real estate branding for this agent: Name: '+name+'. Years in real estate: '+(years||'experienced')+'. Market: '+market+'. Specialty: '+(spec||'residential real estate')+'. Personality: '+(words||'professional, local, knowledgeable')+'. Background: '+(extra||'independent California real estate agent')+'. Generate FOUR sections with these exact headers on their own line: [BIO] [INSTAGRAM] [SIGNATURE] [PITCH]. BIO: 150-word professional bio in third person. INSTAGRAM: Instagram profile bio max 150 chars with emojis and line breaks. SIGNATURE: Professional email signature with name, title Independent Broker, market area, and placeholder for phone/email/website. PITCH: 30-second spoken elevator pitch in first person, conversational and memorable.';
+  fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:prompt,systemPrompt:'You are a real estate personal branding expert. Create compelling, authentic brand copy for independent California agents.',max_tokens:1200})})
+  .then(function(r){return r.json();}).then(function(d){
+    if(d.text){parseBrand(d.text);}else{toast('Try again');}
+    btn.disabled=false;btn.textContent='Build My Brand';
+  }).catch(function(){btn.disabled=false;btn.textContent='Build My Brand';toast('Connection error - try again');});
+}
+
+function parseBrand(text){
+  var bioM=text.match(/\[BIO\]([\s\S]*?)(?=\[INSTAGRAM\]|\[SIGNATURE\]|\[PITCH\]|$)/i);
+  var igM=text.match(/\[INSTAGRAM\]([\s\S]*?)(?=\[SIGNATURE\]|\[PITCH\]|$)/i);
+  var sigM=text.match(/\[SIGNATURE\]([\s\S]*?)(?=\[PITCH\]|$)/i);
+  var pitchM=text.match(/\[PITCH\]([\s\S]*?)$/i);
+  if(bioM&&bioM[1].trim()){document.getElementById('brandBioBody').innerHTML=fmt(bioM[1].trim());document.getElementById('brandBio').classList.add('show');}
+  if(igM&&igM[1].trim()){document.getElementById('brandIGBody').innerHTML=fmt(igM[1].trim());document.getElementById('brandIG').classList.add('show');}
+  if(sigM&&sigM[1].trim()){document.getElementById('brandSigBody').innerHTML=fmt(sigM[1].trim());document.getElementById('brandSig').classList.add('show');}
+  if(pitchM&&pitchM[1].trim()){document.getElementById('brandPitchBody').innerHTML=fmt(pitchM[1].trim());document.getElementById('brandPitch').classList.add('show');}
+  document.querySelector('.brand-body').scrollTop=99999;
+  toast('Brand copy ready');
+}
+
+/* ---- COPY HELPER ---- */
+function copyEl(id){
+  var el=document.getElementById(id);
+  var text=el.innerText||el.textContent;
+  if(navigator.clipboard){navigator.clipboard.writeText(text).then(function(){toast('Copied');});}
+  else{var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('Copied');}
+}
+
+
+/* ---- CUSTOMIZABLE NAV ---- */
+var NAV_ALL = [
+  {id:'chat',    icon:'&#128172;', label:'Chat',    color:'var(--neon)'},
+  {id:'talk',    icon:'&#127897;', label:'Talk',    color:'var(--neon)'},
+  {id:'listing', icon:'&#127968;', label:'Listing', color:'var(--gold)'},
+  {id:'email',   icon:'&#9993;',   label:'Email',   color:'var(--coral)'},
+  {id:'clients', icon:'&#128101;', label:'Clients', color:'var(--neon)'},
+  {id:'scan',    icon:'&#128196;', label:'Scan',    color:'var(--purple)'},
+  {id:'scripts', icon:'&#128172;', label:'Scripts', color:'var(--neon)'},
+  {id:'forms',   icon:'&#128203;', label:'Forms',   color:'var(--purple)'},
+  {id:'brand',   icon:'&#11088;',  label:'Brand',   color:'var(--gold)'}
+];
+
+var DEFAULT_SLOTS = ['chat','talk','listing','email'];
+var navSlots = DEFAULT_SLOTS.slice();
+var activeScreen = 'chat';
+var navPickerSlot = -1;
+var navHoldTimer = null;
+
+function loadNavSlots() {
+  try {
+    var saved = JSON.parse(localStorage.getItem('brooke_nav') || 'null');
+    if (saved && saved.length === 4) navSlots = saved;
+  } catch(e) {}
+}
+
+function saveNavSlots() {
+  try { localStorage.setItem('brooke_nav', JSON.stringify(navSlots)); } catch(e) {}
+}
+
+function getNavItem(id) {
+  for (var i = 0; i < NAV_ALL.length; i++) { if (NAV_ALL[i].id === id) return NAV_ALL[i]; }
+  return NAV_ALL[0];
+}
+
+function renderNav() {
+  for (var i = 0; i < 4; i++) {
+    var slot = document.getElementById('navSlot' + i);
+    var item = getNavItem(navSlots[i]);
+    var isActive = navSlots[i] === activeScreen;
+    slot.className = 'ni' + (isActive ? ' active' : '');
+    slot.innerHTML = '<div class="ni-icon">' + item.icon + '</div><div class="ni-lbl" style="color:' + (isActive ? item.color : '') + '">' + item.label + '</div>';
+  }
+}
+
+function navTap(slot) {
+  if (navHoldTimer) return;
+  showS(navSlots[slot]);
+}
+
+function navTouchStart(slot, e) {
+  navHoldTimer = null;
+  var t = setTimeout(function() {
+    navHoldTimer = true;
+    openNavPicker(slot, e);
+  }, 600);
+  navHoldTimer = t;
+}
+
+function navTouchEnd(e) {
+  if (typeof navHoldTimer === 'number') {
+    clearTimeout(navHoldTimer);
+    navHoldTimer = null;
+  }
+}
+
+function openNavPicker(slot, e) {
+  if (e) { e.preventDefault(); e.stopPropagation(); }
+  navPickerSlot = slot;
+  var grid = document.getElementById('navPickerGrid');
+  var html = '';
+  for (var i = 0; i < NAV_ALL.length; i++) {
+    var item = NAV_ALL[i];
+    var isCurrent = navSlots[slot] === item.id;
+    html += '<div onclick="selectNavSlot(&quot;' + item.id + '&quot;)" style="background:var(--s3);border:.5px solid ' + (isCurrent ? item.color : 'var(--border)') + ';border-radius:14px;padding:12px 8px;text-align:center;cursor:pointer">';
+    html += '<div style="font-size:22px;margin-bottom:4px">' + item.icon + '</div>';
+    html += '<div style="font-size:10px;font-weight:600;color:' + (isCurrent ? item.color : 'var(--muted)') + ';font-family:DM Mono,monospace">' + item.label + '</div>';
+    html += '</div>';
+  }
+  grid.innerHTML = html;
+  document.getElementById('navPickerOverlay').style.display = 'block';
+  document.getElementById('navPicker').style.display = 'block';
+  toast('Hold to customize tabs');
+}
+
+function selectNavSlot(screenId) {
+  if (navPickerSlot < 0) return;
+  navSlots[navPickerSlot] = screenId;
+  saveNavSlots();
+  renderNav();
+  closeNavPicker();
+  showS(screenId);
+  toast(getNavItem(screenId).label + ' added to nav');
+}
+
+function closeNavPicker() {
+  document.getElementById('navPickerOverlay').style.display = 'none';
+  document.getElementById('navPicker').style.display = 'none';
+  navPickerSlot = -1;
+}
+
+/* override showS to update nav state */
+var _origShowS = showS;
+showS = function(n) {
+  activeScreen = n;
+  _origShowS(n);
+  renderNav();
+};
+
+</script>
+</body>
+</html>
